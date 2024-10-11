@@ -1,0 +1,53 @@
+package model;
+
+import enums.TipoTransacaoEnum;
+import services.TransacaoService;
+
+import java.time.LocalDateTime;
+
+public class Transacao {
+
+    private TipoTransacaoEnum tipo;
+    private Criptoativo criptoativo;
+    private double quantidade;
+    private double valor;
+    private LocalDateTime data = LocalDateTime.now();
+
+    public Transacao(TipoTransacaoEnum tipo, Criptoativo criptoativo, double valor) {
+        this.tipo = tipo;
+        this.criptoativo = criptoativo;
+        this.valor = valor;
+        setQuantidade(valor);
+    }
+
+    public TipoTransacaoEnum getTipo() {
+        return tipo;
+    }
+
+    public double getQuantidade() {
+        return quantidade;
+    }
+
+    public double getValor() {
+        return valor;
+    }
+
+    public LocalDateTime getData() {
+        return data;
+    }
+
+    public Criptoativo getCriptoativo() {
+        return criptoativo;
+    }
+
+    public void setQuantidade(double valor) {
+        this.quantidade = valor / this.criptoativo.getPrecoAtual();
+    }
+
+    public void executarTransacao(Carteira carteira) {
+        TransacaoService service = new TransacaoService(this, carteira);
+        service.handle();
+    }
+
+}
+

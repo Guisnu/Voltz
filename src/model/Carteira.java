@@ -1,0 +1,117 @@
+package model;
+
+import enums.TipoMovimentacaoEnum;
+
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Carteira {
+
+    private String nome;
+    private Investidor investidor;
+    private List<Criptoativo> criptoativos = new ArrayList<>();
+    private List<Transacao> transacoes = new ArrayList<>();
+    private List<Ordem> ordens = new ArrayList<>();
+    private double saldo;
+    private double saldoResv = 0.0;
+
+    public Carteira(String nome, Investidor investidor) {
+        this.nome = nome;
+        this.investidor = investidor;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public double getSaldo() {
+        return saldo;
+    }
+
+    public double getSaldoResv() {
+        return saldoResv;
+    }
+
+    public void setSaldo(double saldo) {
+        this.saldo = saldo;
+    }
+
+    public void setSaldoResv(double saldoResv) {
+        if(saldoResv > this.saldo) {
+            throw new IllegalArgumentException("A quantidade da reserva é maior que a quantidade disponível na carteira!");
+        }
+
+        this.saldoResv = saldoResv;
+    }
+
+    public void depositar(double valor) {
+        if (valor < 0){throw new IllegalArgumentException("O valor deve ser maior que Zero!");}
+
+        double saldoInvestidor = this.investidor.getSaldo();
+
+        if(saldoInvestidor < valor) {
+            throw new IllegalArgumentException("Saldo insuficiente!");
+        }
+
+        this.investidor.adicionarMovimentacao(
+                new MovimentacaoConta(
+                        this.investidor,
+                        TipoMovimentacaoEnum.TRANSFERENCIA,
+                        valor
+                )
+        );
+
+        this.investidor.setSaldo(saldoInvestidor - valor);
+        this.saldo = valor;
+    }
+
+    public void adicionarCriptoativo(Criptoativo criptoativo) {
+        criptoativos.add(criptoativo);
+    }
+
+    public List<Criptoativo> getCriptoativos() {
+        return criptoativos;
+    }
+
+    public void removerCriptoativo(Criptoativo criptoativo) {
+        criptoativos.remove(criptoativo);
+    }
+
+    public void adicionarTransacao(Transacao transacao) {
+        transacoes.add(transacao);
+    }
+
+    public List<Transacao> getTransacoes() {
+        return transacoes;
+    }
+
+    public void adicionarOrdens(Ordem ordem) {
+        ordens.add(ordem);
+    }
+
+    public List<Ordem> getOrdens() {
+        return ordens;
+    }
+
+    public double calcularValorTotal() {
+        //Banco de dados
+        double total = 0.0;
+
+        for (Criptoativo criptoativo : criptoativos) {
+            total += criptoativo.getSaldo();
+        }
+
+        return total;
+    }
+
+    // Método para exibir informações da carteira (para fins de log ou auditoria)
+    @Override
+    public String toString() {
+        return "Carteira={" +
+                "nome=" + nome +
+                ", investidor=" + investidor.getNome() +
+                ", saldo=" + saldo +
+                '}';
+    }
+}
