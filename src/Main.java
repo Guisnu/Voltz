@@ -18,22 +18,31 @@ public class Main {
 
         int op;
 
-        Investidor investidor = new Investidor(
+        Conta conta = new Conta(
                 "Investidor 01",
                 "investidor01@example.com",
                 "senha123"
         );
 
-        System.out.println("");
         System.out.println("            SISTEMA DE INVESTIMENTO         ");
         System.out.println("                  BEM VINDO                 ");
+
+//        System.out.print("Qual seu Nome: "); String nomeConta = sc.nextLine();
+//
+//        System.out.print("Seu melhor Email: "); String emailConta = sc.nextLine();
+//
+//        System.out.print("Senha: "); String senhaConta = sc.nextLine();
+//
+//        Conta conta = new Conta(nomeConta, emailConta, senhaConta);
+
+
         System.out.println("");
-        System.out.println("Olá, " + investidor.getNome() + "!");
+        System.out.println("Olá, " + conta.getNome() + "!");
         System.out.println("");
 
         do {
 
-            List<Carteira> carteirasInvestidor = investidor.getCarteiras();
+            List<Carteira> carteirasInvestidor = conta.getCarteiras();
 
                 System.out.println("----------------------------------------------");
                 System.out.println("|                MENU PRINCIPAL               |");
@@ -78,7 +87,7 @@ public class Main {
                     System.out.println("----------------------------------------------");
                     System.out.print("Informe a quantidade do depósito: ");
                     double deposito = sc.nextDouble();
-                    boolean result = investidor.depositar(deposito);
+                    boolean result = conta.depositar(deposito);
                     if (!result){break;}
                     System.out.println("Valor depositado com sucesso!");
                     break;
@@ -86,7 +95,7 @@ public class Main {
                     System.out.println("----------------------------------------------");
                     System.out.println("|              SALDO INVESTIDOR              |");
                     System.out.println("----------------------------------------------");
-                    System.out.println("Saldo atual: R$" + investidor.getSaldo());
+                    System.out.println("Saldo atual: R$" + conta.getSaldo());
                     break;
                 case 3:
                     System.out.println("----------------------------------------------");
@@ -95,7 +104,7 @@ public class Main {
                     System.out.print("Informe a quantidade do saque: ");
                     double saque = sc.nextDouble();
 
-                    if (investidor.sacar(saque)) {
+                    if (conta.sacar(saque)) {
                         System.out.println("Valor sacado com sucesso!");
                     } else {
                         System.out.println("Saldo insuficiente!");
@@ -109,8 +118,8 @@ public class Main {
                     System.out.print("Informe o nome da carteira: ");
                     String nomeCarteira = sc.next() + sc.nextLine();
 
-                    Carteira carteira = new Carteira(nomeCarteira, investidor);
-                    investidor.adicionarCarteira(carteira);
+                    Carteira carteira = new Carteira(nomeCarteira, conta);
+                    conta.adicionarCarteira(carteira);
 
                     System.out.println("Carteira criada com sucesso!");
                     break;

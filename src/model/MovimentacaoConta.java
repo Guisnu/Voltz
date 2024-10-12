@@ -6,28 +6,28 @@ import java.time.LocalDateTime;
 
 public class MovimentacaoConta {
 
-    private Investidor investidor;
+    private Conta conta;
     private Empresa empresa;
     private TipoMovimentacaoEnum tipo;
     private double valor;
     private LocalDateTime data = LocalDateTime.now();
 
-    public MovimentacaoConta(Investidor investidor, Empresa empresa, TipoMovimentacaoEnum tipo, double valor) {
-        this.investidor = investidor;
+    public MovimentacaoConta(Conta conta, Empresa empresa, TipoMovimentacaoEnum tipo, double valor) {
+        this.conta = conta;
         this.empresa = empresa;
         this.tipo = tipo;
         this.valor = valor;
     }
 
-    public MovimentacaoConta(Investidor investidor, TipoMovimentacaoEnum tipo, double valor) {
-        this.investidor = investidor;
+    public MovimentacaoConta(Conta conta, TipoMovimentacaoEnum tipo, double valor) {
+        this.conta = conta;
         this.tipo = tipo;
         this.valor = valor;
         this.data = LocalDateTime.now();
     }
 
-    public Investidor getInvestidor() {
-        return investidor;
+    public Conta getInvestidor() {
+        return conta;
     }
 
     public Empresa getEmpresa() {
@@ -62,7 +62,7 @@ public class MovimentacaoConta {
     @Override
     public String toString() {
         return "Movimentacao{" +
-                ", investidor=" + investidor.getNome() +
+                ", Conta=" + conta.getNome() +
                 ", empresa=" + (empresa != null ? empresa.getRazaoSocial() : "N/A") +
                 ", tipo='" + tipo + '\'' +
                 ", valor=" + valor +

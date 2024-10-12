@@ -2,14 +2,14 @@ package model;
 
 public class Empresa {
 
-    private Investidor investidor;
+    private Conta conta;
     private String razaoSocial;
     private String nomeFantasia;
     private String cnpj;
     private double saldo;
 
-    public Empresa(Investidor investidor, String razaoSocial, String nomeFantasia, String cnpj, double saldo) {
-        this.investidor = investidor;
+    public Empresa(Conta conta, String razaoSocial, String nomeFantasia, String cnpj, double saldo) {
+        this.conta = conta;
         this.razaoSocial = razaoSocial;
         this.nomeFantasia = nomeFantasia;
         this.cnpj = cnpj;
@@ -32,8 +32,8 @@ public class Empresa {
         return saldo;
     }
 
-    public Investidor getInvestidor() {
-        return investidor;
+    public Conta getInvestidor() {
+        return conta;
     }
 
     public void depositar(double valor) {
@@ -43,7 +43,7 @@ public class Empresa {
 
     public boolean transferirParaSaldoInvestidor(double valor) {
         this.saldo -= valor;
-        this.investidor.depositar(valor);
+        this.conta.depositar(valor);
         return true;
     }
 }
