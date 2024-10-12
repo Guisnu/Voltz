@@ -2,23 +2,22 @@ package model;
 
 import enums.TipoMovimentacaoEnum;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Carteira {
 
     private String nome;
-    private Investidor investidor;
+    private Conta conta;
     private List<Criptoativo> criptoativos = new ArrayList<>();
     private List<Transacao> transacoes = new ArrayList<>();
     private List<Ordem> ordens = new ArrayList<>();
     private double saldo;
     private double saldoResv = 0.0;
 
-    public Carteira(String nome, Investidor investidor) {
+    public Carteira(String nome, Conta conta) {
         this.nome = nome;
-        this.investidor = investidor;
+        this.conta = conta;
     }
 
     public String getNome() {
@@ -48,21 +47,21 @@ public class Carteira {
     public void depositar(double valor) {
         if (valor < 0){throw new IllegalArgumentException("O valor deve ser maior que Zero!");}
 
-        double saldoInvestidor = this.investidor.getSaldo();
+        double saldoInvestidor = this.conta.getSaldo();
 
         if(saldoInvestidor < valor) {
             throw new IllegalArgumentException("Saldo insuficiente!");
         }
 
-        this.investidor.adicionarMovimentacao(
+        this.conta.adicionarMovimentacao(
                 new MovimentacaoConta(
-                        this.investidor,
+                        this.conta,
                         TipoMovimentacaoEnum.TRANSFERENCIA,
                         valor
                 )
         );
 
-        this.investidor.setSaldo(saldoInvestidor - valor);
+        this.conta.setSaldo(saldoInvestidor - valor);
         this.saldo = valor;
     }
 
@@ -110,7 +109,7 @@ public class Carteira {
     public String toString() {
         return "Carteira={" +
                 "nome=" + nome +
-                ", investidor=" + investidor.getNome() +
+                ", investidor=" + conta.getNome() +
                 ", saldo=" + saldo +
                 '}';
     }
