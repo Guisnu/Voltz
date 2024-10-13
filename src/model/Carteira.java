@@ -47,9 +47,9 @@ public class Carteira {
     public void depositar(double valor) {
         if (valor < 0){throw new IllegalArgumentException("O valor deve ser maior que Zero!");}
 
-        double saldoInvestidor = this.conta.getSaldo();
+        double saldoConta = this.conta.getSaldo();
 
-        if(saldoInvestidor < valor) {
+        if(saldoConta < valor) {
             throw new IllegalArgumentException("Saldo insuficiente!");
         }
 
@@ -61,7 +61,7 @@ public class Carteira {
                 )
         );
 
-        this.conta.setSaldo(saldoInvestidor - valor);
+        this.conta.setSaldo(saldoConta - valor);
         this.saldo = valor;
     }
 
