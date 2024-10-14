@@ -14,6 +14,9 @@ public class Transacao {
     private LocalDateTime data = LocalDateTime.now();
 
     public Transacao(TipoTransacaoEnum tipo, Criptoativo criptoativo, double valor) {
+        if (valor < 0) {
+            throw new IllegalArgumentException("O valor deve ser maior que Zero!");
+        }
         this.tipo = tipo;
         this.criptoativo = criptoativo;
         this.valor = valor;
@@ -41,6 +44,9 @@ public class Transacao {
     }
 
     public void setQuantidade(double valor) {
+        if (valor < 0) {
+            throw new IllegalArgumentException("O valor deve ser maior que Zero!");
+        }
         this.quantidade = valor / this.criptoativo.getPrecoAtual();
     }
 
