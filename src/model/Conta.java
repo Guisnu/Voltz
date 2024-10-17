@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Conta extends Investidor {
-    private Loing id; //uso do Long é para poder representar a ausência de um id caso necessário, assim, retornando NULL. ID = CHAVE PRIMÁRIA, agora vou dar um get nele e usar o construtor ED
+    private Long id; //uso do Long é para poder representar a ausência de um id caso necessário, assim, retornando NULL. ID = CHAVE PRIMÁRIA, agora vou dar um get nele e usar o construtor ED
     private double saldo = 0.0;
     private List<Empresa> empresas = new ArrayList<Empresa>();
     private List<Carteira> carteiras = new ArrayList<Carteira>();
     private List<MovimentacaoConta> movimentacoes = new ArrayList<MovimentacaoConta>();
     private List<Transacao> transacoes = new ArrayList<Transacao>();
 
-    public Conta(String nome, String email, String senha) {
+    public Conta(Long id, String nome, String email, String senha) {
         super(nome, email, senha);
         this.id = id; //add o id no construtor, para ser inicializado junto ED
     } 
