@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Conta extends Investidor {
+    private Loing id; //uso do Long é para poder representar a ausência de um id caso necessário, assim, retornando NULL. ID = CHAVE PRIMÁRIA, agora vou dar um get nele e usar o construtor ED
     private double saldo = 0.0;
     private List<Empresa> empresas = new ArrayList<Empresa>();
     private List<Carteira> carteiras = new ArrayList<Carteira>();
@@ -14,6 +15,11 @@ public class Conta extends Investidor {
 
     public Conta(String nome, String email, String senha) {
         super(nome, email, senha);
+        this.id = id; //add o id no construtor, para ser inicializado junto ED
+    } 
+
+    public Long getId() {  //get id básico ED
+        return id;
     }
 
     public double getSaldo() {
@@ -99,6 +105,7 @@ public class Conta extends Investidor {
     @Override
     public String toString() {
         return "Conta={" +
+                "id=" + id + //nao precisa do get pois ja fiz la em cima ED
                 "nome=" + getNome() +
                 ", email=" + getEmail() +
                 ", senha='" + getSenha() + '\'' +
