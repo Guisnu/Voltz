@@ -1,24 +1,25 @@
 package model;
-
 import enums.TipoMovimentacaoEnum;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class Conta extends Investidor {
-    private Long id; //uso do Long é para poder representar a ausência de um id caso necessário, assim, retornando NULL. ID = CHAVE PRIMÁRIA, agora vou dar um get nele e usar o construtor ED
-    private double saldo = 0.0;
+// Cria a classe carteira que é a extensão da classe Investidor
+public class Conta {
+    private Integer id; // tipei ID como integer ao invés de Long porque esse atributo não pode ser nulo
+    private Investidor investidor;
+    private Double saldo = 0.0;
     private List<Empresa> empresas = new ArrayList<Empresa>();
-    private List<Carteira> carteiras = new ArrayList<Carteira>();
+    private  List<Carteira> carteiras = new ArrayList<Carteira>();
     private List<MovimentacaoConta> movimentacoes = new ArrayList<MovimentacaoConta>();
     private List<Transacao> transacoes = new ArrayList<Transacao>();
 
-    public Conta(Long id, String nome, String email, String senha) {
-        super(nome, email, senha);
-        this.id = id; //add o id no construtor, para ser inicializado junto ED
+
+    public Conta(Integer id, Investidor investidor ) {
+        this.id = id;
+        this.investidor = investidor;
     } 
 
-    public Long getId() {  //get id básico ED
+    public Integer getId() {  //get id básico ED
         return id;
     }
 
@@ -102,16 +103,16 @@ public class Conta extends Investidor {
         return historico;
     }
 
-    @Override
-    public String toString() {
-        return "Conta={" +
-                "id=" + id + //nao precisa do get pois ja fiz la em cima ED
-                "nome=" + getNome() +
-                ", email=" + getEmail() +
-                ", senha='" + getSenha() + '\'' +
-                ", saldo=" + saldo +
-                '}';
-    }
+    // @Override
+    // public String toString() {
+    //     return "Conta={" +
+    //             "id=" + id + //nao precisa do get pois ja fiz la em cima ED
+    //             "nome=" + getNome() +
+    //             ", email=" + getEmail() +
+    //             ", senha='" + getSenha() + '\'' +
+    //             ", saldo=" + saldo +
+    //             '}';
+    // }
 }
 
 
