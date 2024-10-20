@@ -1,12 +1,10 @@
 import enums.TipoOrdemEnum;
 import enums.TipoTransacaoEnum;
-import model.*;
-import services.MercadoService;
-
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
-
+import model.*;
+import services.MercadoService;
 public class Main {
 
     public static void main(String[] args) {
@@ -18,31 +16,36 @@ public class Main {
 
         int op;
 
-        Conta conta = new Conta(
-                "Investidor 01",
-                "investidor01@example.com",
-                "senha123"
+
+        Investidor investidor = new Investidor(
+                1,
+                "Gui",
+                "teste@",
+                "teste"
+
+
+
         );
 
         System.out.println("            SISTEMA DE INVESTIMENTO         ");
         System.out.println("                  BEM VINDO                 ");
 
-//        System.out.print("Qual seu Nome: "); String nomeConta = sc.nextLine();
+//        System.out.print("Qual seu Nome: "); String nomeinvestidor = sc.nextLine();
 //
-//        System.out.print("Seu melhor Email: "); String emailConta = sc.nextLine();
+//        System.out.print("Seu melhor Email: "); String emailinvestidor = sc.nextLine();
 //
-//        System.out.print("Senha: "); String senhaConta = sc.nextLine();
+//        System.out.print("Senha: "); String senhainvestidor = sc.nextLine();
 //
-//        Conta conta = new Conta(nomeConta, emailConta, senhaConta);
+//        investidor investidor = new investidor(nomeinvestidor, emailinvestidor, senhainvestidor);
 
 
         System.out.println("");
-        System.out.println("Olá, " + conta.getNome() + "!");
+        System.out.println("Olá, " + investidor.getNome() + "!");
         System.out.println("");
 
         do {
 
-            List<Carteira> carteirasInvestidor = conta.getCarteiras();
+            List<Carteira> carteirasInvestidor =  investidor.conta.getCarteiras();
 
                 System.out.println("----------------------------------------------");
                 System.out.println("|                MENU PRINCIPAL               |");
@@ -87,7 +90,7 @@ public class Main {
                     System.out.println("----------------------------------------------");
                     System.out.print("Informe a quantidade do depósito: ");
                     double deposito = sc.nextDouble();
-                    boolean result = conta.depositar(deposito);
+                    boolean result = investidor.conta.depositar(deposito);
                     if (!result){break;}
                     System.out.println("Valor depositado com sucesso!");
                     break;
@@ -95,7 +98,7 @@ public class Main {
                     System.out.println("----------------------------------------------");
                     System.out.println("|              SALDO INVESTIDOR              |");
                     System.out.println("----------------------------------------------");
-                    System.out.println("Saldo atual: R$" + conta.getSaldo());
+                    System.out.println("Saldo atual: R$" + investidor.conta.getSaldo());
                     break;
                 case 3:
                     System.out.println("----------------------------------------------");
@@ -104,7 +107,7 @@ public class Main {
                     System.out.print("Informe a quantidade do saque: ");
                     double saque = sc.nextDouble();
 
-                    if (conta.sacar(saque)) {
+                    if (investidor.conta.sacar(saque)) {
                         System.out.println("Valor sacado com sucesso!");
                     } else {
                         System.out.println("Saldo insuficiente!");
@@ -118,8 +121,8 @@ public class Main {
                     System.out.print("Informe o nome da carteira: ");
                     String nomeCarteira = sc.next() + sc.nextLine();
 
-                    Carteira carteira = new Carteira(nomeCarteira, conta);
-                    conta.adicionarCarteira(carteira);
+                    Carteira carteira = new Carteira(nomeCarteira, investidor.conta);
+                    investidor.conta.adicionarCarteira(carteira);
 
                     System.out.println("Carteira criada com sucesso!");
                     break;

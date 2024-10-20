@@ -1,7 +1,6 @@
 package model;
 
 import enums.TipoMovimentacaoEnum;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,12 +104,12 @@ public class Carteira {
     }
 
     // Método para exibir informações da carteira (para fins de log ou auditoria)
-    @Override
-    public String toString() {
-        return "Carteira={" +
-                "nome=" + nome +
-                ", investidor=" + conta.getNome() +
-                ", saldo=" + saldo +
-                '}';
-    }
+    // @Override
+    // public String toString() {
+    //     return "Carteira={" +
+    //             "nome=" + nome +
+    //             ", investidor=" + conta.getNome() +
+    //             ", saldo=" + saldo +
+    //             '}';
+    // }
 }
