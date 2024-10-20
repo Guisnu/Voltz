@@ -3,7 +3,7 @@ package model;
 public class Empresa {
 
     private int idEmpresa;
-    private int contador;
+    private int contador = 0;
     private String razaoSocial;
     private String nomeFantasia;
     private String cnpj;
