@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Carteira {
 
+    public int idCarteira = Investidor.contador;
     private String nome;
     private Conta conta;
     private List<Criptoativo> criptoativos = new ArrayList<>();
@@ -36,7 +37,7 @@ public class Carteira {
     }
 
     public void setSaldoResv(double saldoResv) {
-        if(saldoResv > this.saldo) {
+        if (saldoResv > this.saldo) {
             throw new IllegalArgumentException("A quantidade da reserva é maior que a quantidade disponível na carteira!");
         }
 
@@ -44,11 +45,13 @@ public class Carteira {
     }
 
     public void depositar(double valor) {
-        if (valor < 0){throw new IllegalArgumentException("O valor deve ser maior que Zero!");}
+        if (valor < 0) {
+            throw new IllegalArgumentException("O valor deve ser maior que Zero!");
+        }
 
         double saldoConta = this.conta.getSaldo();
 
-        if(saldoConta < valor) {
+        if (saldoConta < valor) {
             throw new IllegalArgumentException("Saldo insuficiente!");
         }
 
