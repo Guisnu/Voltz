@@ -8,7 +8,7 @@ public class Conta {
 
     private Integer idConta = Investidor.contador; // ID da conta
     private Integer contadorNumConta = 0010;
-    public Integer numConta = 0010;
+    public Integer numConta;
     public Integer agencia = 0001;
     private Investidor investidor;
     private Double saldo = 0.0;
