@@ -16,7 +16,6 @@ public class Main {
 
         int op;
 
-
         Investidor investidor = new Investidor(
                 1,
                 "Gui",
