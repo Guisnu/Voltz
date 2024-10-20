@@ -18,6 +18,7 @@ public class Main {
 
         int op;
 
+<<<<<<< HEAD
         // Investidor investidor = new Investidor(
         //         "Gui",
         //         "teste@",
@@ -34,6 +35,14 @@ public class Main {
 
         Investidor investidor = new Investidor(nomeinvestidor, emailinvestidor, senhainvestidor);
         System.out.println(investidor.conta.getId());
+=======
+        Investidor investidor = new Investidor(
+                1,
+                "Gui",
+                "teste@",
+                "teste"
+        );
+>>>>>>> main
 
         System.out.println("            SISTEMA DE INVESTIMENTO         ");
         System.out.println("                  BEM VINDO                 ");
