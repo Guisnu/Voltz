@@ -22,9 +22,6 @@ public class Main {
                 "Gui",
                 "teste@",
                 "teste"
-
-
-
         );
 
         System.out.println("            SISTEMA DE INVESTIMENTO         ");

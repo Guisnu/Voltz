@@ -58,15 +58,15 @@ public class MovimentacaoConta {
         return data;
     }
 
-    // Método para exibir informações da movimentação (para fins de log ou auditoria)
-    @Override
-    public String toString() {
-        return "Movimentacao{" +
-                ", Conta=" + conta.getNome() +
-                ", empresa=" + (empresa != null ? empresa.getRazaoSocial() : "N/A") +
-                ", tipo='" + tipo + '\'' +
-                ", valor=" + valor +
-                ", data=" + data +
-                '}';
-    }
+//    // Método para exibir informações da movimentação (para fins de log ou auditoria)
+//    @Override
+//    public String toString() {
+//        return "Movimentacao{" +
+//                ", Conta=" + conta.getNome() +
+//                ", empresa=" + (empresa != null ? empresa.getRazaoSocial() : "N/A") +
+//                ", tipo='" + tipo + '\'' +
+//                ", valor=" + valor +
+//                ", data=" + data +
+//                '}';
+//    }
 }
