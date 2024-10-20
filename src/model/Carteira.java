@@ -1,6 +1,5 @@
 package model;
 
-import enums.TipoMovimentacaoEnum;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,13 +8,15 @@ public class Carteira {
     public int idCarteira = Investidor.contador;
     private String nome;
     private Conta conta;
+    private double saldo;
     private List<Criptoativo> criptoativos = new ArrayList<>();
     private List<Transacao> transacoes = new ArrayList<>();
     private List<Ordem> ordens = new ArrayList<>();
-    private double saldo;
     private double saldoResv = 0.0;
 
+    // verificar a necessidade de adiconar o this.idCarteira
     public Carteira(String nome, Conta conta) {
+
         this.nome = nome;
         this.conta = conta;
     }
@@ -44,6 +45,7 @@ public class Carteira {
         this.saldoResv = saldoResv;
     }
 
+    //trocado if por while?
     public void depositar(double valor) {
         if (valor < 0) {
             throw new IllegalArgumentException("O valor deve ser maior que Zero!");
@@ -54,14 +56,6 @@ public class Carteira {
         if (saldoConta < valor) {
             throw new IllegalArgumentException("Saldo insuficiente!");
         }
-
-        this.conta.adicionarMovimentacao(
-                new MovimentacaoConta(
-                        this.conta,
-                        TipoMovimentacaoEnum.TRANSFERENCIA,
-                        valor
-                )
-        );
 
         this.conta.setSaldo(saldoConta - valor);
         this.saldo = valor;
