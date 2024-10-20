@@ -7,6 +7,9 @@ import java.util.List;
 public class Conta {
 
     private Integer idConta = Investidor.contador; // ID da conta
+    private Integer contadorNumConta = 0010;
+    public Integer numConta;
+    public Integer agencia = 0001;
     private Investidor investidor;
     private Double saldo = 0.0;
     private List<Empresa> empresas = new ArrayList<>();
@@ -15,6 +18,7 @@ public class Conta {
     private List<Transacao> transacoes = new ArrayList<>();
 
     public Conta(Integer idConta, Investidor investidor) {
+        this.numConta = ++contadorNumConta;
         if (investidor.getId().equals(idConta)) {
             this.idConta = idConta;
             this.investidor = investidor;
@@ -25,6 +29,14 @@ public class Conta {
 
     public Integer getId() {
         return idConta;
+    }
+
+    public Integer getNumConta() {
+        return numConta;
+    }
+
+    public Integer getAgencia() {
+        return agencia;
     }
 
     public Double getSaldo() {
