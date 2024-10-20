@@ -1,3 +1,4 @@
+
 import enums.TipoOrdemEnum;
 import enums.TipoTransacaoEnum;
 import java.time.format.DateTimeFormatter;
@@ -5,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 import model.*;
 import services.MercadoService;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -16,24 +18,34 @@ public class Main {
 
         int op;
 
+<<<<<<< HEAD
+        // Investidor investidor = new Investidor(
+        //         "Gui",
+        //         "teste@",
+        //         "teste"
+        // );
+        System.out.print("Qual seu Nome: ");
+        String nomeinvestidor = sc.nextLine();
+
+        System.out.print("Seu melhor Email: ");
+        String emailinvestidor = sc.nextLine();
+
+        System.out.print("Senha: ");
+        String senhainvestidor = sc.nextLine();
+
+        Investidor investidor = new Investidor(nomeinvestidor, emailinvestidor, senhainvestidor);
+        System.out.println(investidor.conta.getId());
+=======
         Investidor investidor = new Investidor(
                 1,
                 "Gui",
                 "teste@",
                 "teste"
         );
+>>>>>>> main
 
         System.out.println("            SISTEMA DE INVESTIMENTO         ");
         System.out.println("                  BEM VINDO                 ");
-
-//        System.out.print("Qual seu Nome: "); String nomeinvestidor = sc.nextLine();
-//
-//        System.out.print("Seu melhor Email: "); String emailinvestidor = sc.nextLine();
-//
-//        System.out.print("Senha: "); String senhainvestidor = sc.nextLine();
-//
-//        investidor investidor = new investidor(nomeinvestidor, emailinvestidor, senhainvestidor);
-
 
         System.out.println("");
         System.out.println("Olá, " + investidor.getNome() + "!");
@@ -41,17 +53,17 @@ public class Main {
 
         do {
 
-            List<Carteira> carteirasInvestidor =  investidor.conta.getCarteiras();
+            List<Carteira> carteirasInvestidor = investidor.conta.getCarteiras();
 
-                System.out.println("----------------------------------------------");
-                System.out.println("|                MENU PRINCIPAL               |");
-                System.out.println("----------------------------------------------");
-                System.out.println("| Por favor, selecione uma das opções abaixo: |");
-                System.out.println("----------------------------------------------");
-                System.out.println("|  1  | Depositar                             |");
-                System.out.println("|  2  | Visualizar saldo investidor           |");
-                System.out.println("|  3  | Sacar                                 |");
-                System.out.println("|  4  | Criar carteira de investimento        |");
+            System.out.println("----------------------------------------------");
+            System.out.println("|                MENU PRINCIPAL               |");
+            System.out.println("----------------------------------------------");
+            System.out.println("| Por favor, selecione uma das opções abaixo: |");
+            System.out.println("----------------------------------------------");
+            System.out.println("|  1  | Depositar                             |");
+            System.out.println("|  2  | Visualizar saldo Conta                |");
+            System.out.println("|  3  | Sacar                                 |");
+            System.out.println("|  4  | Criar carteira de investimento        |");
 
             if (!carteirasInvestidor.isEmpty()) {
                 System.out.println("|  5  | Visualizar carteiras de investimento  |");
@@ -73,11 +85,12 @@ public class Main {
                 System.out.println("|  15 | Executar ordem                        |");
                 System.out.println("|  16 | Visualizar ordens                     |");
             }
-                System.out.println("----------------------------------------------");
-                System.out.println("|  0  | Sair                                  |");
-                System.out.println("----------------------------------------------");
-                System.out.print("Opção: "); op = sc.nextInt();
-                System.out.println("");
+            System.out.println("----------------------------------------------");
+            System.out.println("|  0  | Sair                                  |");
+            System.out.println("----------------------------------------------");
+            System.out.print("Opção: ");
+            op = sc.nextInt();
+            System.out.println("");
 
             switch (op) {
                 case 1:
@@ -87,7 +100,9 @@ public class Main {
                     System.out.print("Informe a quantidade do depósito: ");
                     double deposito = sc.nextDouble();
                     boolean result = investidor.conta.depositar(deposito);
-                    if (!result){break;}
+                    if (!result) {
+                        break;
+                    }
                     System.out.println("Valor depositado com sucesso!");
                     break;
                 case 2:
@@ -143,7 +158,7 @@ public class Main {
 
                     Carteira carteiraEscolhida = escolherCarteira(carteirasInvestidor, sc);
 
-                    if(carteiraEscolhida == null) {
+                    if (carteiraEscolhida == null) {
                         break;
                     }
 
@@ -185,14 +200,14 @@ public class Main {
                     System.out.println("=== ESCOLHER CARTEIRA ===");
                     Carteira carteiraECompra = escolherCarteira(carteirasInvestidor, sc);
 
-                    if(carteiraECompra == null) {
+                    if (carteiraECompra == null) {
                         break;
                     }
 
                     System.out.print("Informe o valor a ser comprado: ");
                     double quantidade = sc.nextDouble();
 
-                    if (quantidade < 0){
+                    if (quantidade < 0) {
                         System.out.println("O valor de compra deve ser maior que Zero!");
                         break;
                     }
@@ -211,13 +226,13 @@ public class Main {
 
                     Carteira carteiraEVendaCriptoativo = escolherCarteira(carteirasInvestidor, sc);
 
-                    if(carteiraEVendaCriptoativo == null) {
+                    if (carteiraEVendaCriptoativo == null) {
                         break;
                     }
 
                     Criptoativo criptoativoEVenda = escolherCriptoativoCarteira(carteiraEVendaCriptoativo, sc);
 
-                    if(criptoativoEVenda == null) {
+                    if (criptoativoEVenda == null) {
                         break;
                     }
 
@@ -239,7 +254,7 @@ public class Main {
 
                     Carteira carteiraEVCriptoativo = escolherCarteira(carteirasInvestidor, sc);
 
-                    if(carteiraEVCriptoativo == null) {
+                    if (carteiraEVCriptoativo == null) {
                         break;
                     }
 
@@ -268,7 +283,7 @@ public class Main {
 
                     Carteira carteiraEVTransacoes = escolherCarteira(carteirasInvestidor, sc);
 
-                    if(carteiraEVTransacoes == null) {
+                    if (carteiraEVTransacoes == null) {
                         break;
                     }
 
@@ -293,13 +308,13 @@ public class Main {
 
                     Carteira carteiraOCompra = escolherCarteira(carteirasInvestidor, sc);
 
-                    if(carteiraOCompra == null) {
+                    if (carteiraOCompra == null) {
                         break;
                     }
 
                     Criptoativo criptoativoOCompra = escolherCriptoativoCarteira(carteiraOCompra, sc);
 
-                    if(criptoativoOCompra == null) {
+                    if (criptoativoOCompra == null) {
                         break;
                     }
 
@@ -353,7 +368,7 @@ public class Main {
 
                     Ordem ordemECancelar = escolherOrdensCarteira(carteiraOCancelar, sc);
 
-                    if(ordemECancelar == null) {
+                    if (ordemECancelar == null) {
                         break;
                     }
 
@@ -377,7 +392,7 @@ public class Main {
 
                     Ordem ordemEEnviar = escolherOrdensCarteira(carteiraOEnviar, sc);
 
-                    if(ordemEEnviar == null) {
+                    if (ordemEEnviar == null) {
                         break;
                     }
 
@@ -401,7 +416,7 @@ public class Main {
 
                     Ordem ordemEExecutar = escolherOrdensCarteira(carteiraOExecutar, sc);
 
-                    if(ordemEExecutar == null) {
+                    if (ordemEExecutar == null) {
                         break;
                     }
 
@@ -419,13 +434,13 @@ public class Main {
 
                     Carteira carteiraEVOrdens = escolherCarteira(carteirasInvestidor, sc);
 
-                    if(carteiraEVOrdens == null) {
+                    if (carteiraEVOrdens == null) {
                         break;
                     }
 
                     List<Ordem> ordensCarteira = carteiraEVOrdens.getOrdens();
 
-                    if(ordensCarteira.isEmpty()) {
+                    if (ordensCarteira.isEmpty()) {
                         System.out.println("Nenhuma ordem encontrada!");
                         break;
                     }
@@ -450,18 +465,18 @@ public class Main {
                     System.out.println("Opção inválida!");
             }
 
-            if(op != 0) {
+            if (op != 0) {
                 voltarMenuPrincipal(sc);
             }
 
-        } while(op != 0);
+        } while (op != 0);
 
         sc.close();
     }
 
     private static Carteira escolherCarteira(List<Carteira> carteiras, Scanner sc) {
 
-        if(carteiras.isEmpty()) {
+        if (carteiras.isEmpty()) {
             System.out.println("Nenhuma carteira foi encontrada!");
             return null;
         }
@@ -487,7 +502,7 @@ public class Main {
         System.out.println("Criptoativos na carteira:");
         List<Criptoativo> criptoativosCarteira = carteira.getCriptoativos();
 
-        if(criptoativosCarteira.isEmpty()) {
+        if (criptoativosCarteira.isEmpty()) {
             System.out.println("Nenhum criptoativo encontrado!");
             return null;
         }
@@ -513,7 +528,7 @@ public class Main {
         System.out.println("Ordens na carteira:");
         List<Ordem> ordensCarteira = carteira.getOrdens();
 
-        if(ordensCarteira.isEmpty()) {
+        if (ordensCarteira.isEmpty()) {
             System.out.println("Nenhuma ordem encontrada!");
             return null;
         }

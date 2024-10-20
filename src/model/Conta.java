@@ -1,29 +1,33 @@
 package model;
+
 import enums.TipoMovimentacaoEnum;
 import java.util.ArrayList;
 import java.util.List;
 
-// Cria a classe carteira que é a extensão da classe Investidor
 public class Conta {
-    private Integer id; // tipei ID como integer ao invés de Long porque esse atributo não pode ser nulo
+
+    private Integer idConta = Investidor.contador; // ID da conta
     private Investidor investidor;
     private Double saldo = 0.0;
-    private List<Empresa> empresas = new ArrayList<Empresa>();
-    private  List<Carteira> carteiras = new ArrayList<Carteira>();
-    private List<MovimentacaoConta> movimentacoes = new ArrayList<MovimentacaoConta>();
-    private List<Transacao> transacoes = new ArrayList<Transacao>();
+    private List<Empresa> empresas = new ArrayList<>();
+    private List<Carteira> carteiras = new ArrayList<>();
+    private List<MovimentacaoConta> movimentacoes = new ArrayList<>();
+    private List<Transacao> transacoes = new ArrayList<>();
 
-
-    public Conta(Integer id, Investidor investidor ) {
-        this.id = id;
-        this.investidor = investidor;
-    } 
-
-    public Integer getId() {  //get id básico ED
-        return id;
+    public Conta(Integer idConta, Investidor investidor) {
+        if (investidor.getId().equals(idConta)) {
+            this.idConta = idConta;
+            this.investidor = investidor;
+        } else {
+            throw new IllegalArgumentException("O ID da conta deve corresponder ao ID do investidor.");
+        }
     }
 
-    public double getSaldo() {
+    public Integer getId() {
+        return idConta;
+    }
+
+    public Double getSaldo() {
         return saldo;
     }
 
@@ -76,7 +80,7 @@ public class Conta {
     }
 
     public boolean depositar(double valor) {
-        if (valor < 0){
+        if (valor < 0) {
             System.out.println("O valor deve ser maior que Zero!");
             return false;
         }
@@ -114,5 +118,3 @@ public class Conta {
     //             '}';
     // }
 }
-
-
