@@ -1,7 +1,6 @@
 package model;
 
 import enums.TipoMovimentacaoEnum;
-
 import java.time.LocalDateTime;
 
 public class MovimentacaoConta {
@@ -12,13 +11,6 @@ public class MovimentacaoConta {
     private double valor;
     private LocalDateTime data = LocalDateTime.now();
 
-    public MovimentacaoConta(Conta conta, Empresa empresa, TipoMovimentacaoEnum tipo, double valor) {
-        this.conta = conta;
-        this.empresa = empresa;
-        this.tipo = tipo;
-        this.valor = valor;
-    }
-
     public MovimentacaoConta(Conta conta, TipoMovimentacaoEnum tipo, double valor) {
         this.conta = conta;
         this.tipo = tipo;
@@ -28,14 +20,6 @@ public class MovimentacaoConta {
 
     public Conta getInvestidor() {
         return conta;
-    }
-
-    public Empresa getEmpresa() {
-        return empresa;
-    }
-
-    public void setEmpresa(Empresa empresa) {
-        this.empresa = empresa;
     }
 
     public TipoMovimentacaoEnum getTipo() {
