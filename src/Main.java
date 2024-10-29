@@ -1,4 +1,3 @@
-
 import enums.TipoOrdemEnum;
 import enums.TipoTransacaoEnum;
 import java.time.format.DateTimeFormatter;
@@ -129,8 +128,20 @@ public class Main {
                     System.out.print("Informe o nome da carteira: ");
                     String nomeCarteira = sc.next() + sc.nextLine();
 
-                    Carteira carteira = new Carteira(nomeCarteira, investidor.conta);
-                    investidor.conta.adicionarCarteira(carteira);
+//                    Carteira carteira = new Carteira(nomeCarteira, investidor.conta);
+//                    investidor.conta.adicionarCarteira(carteira);
+
+                    try{
+                        Carteira carteira = new Carteira(nomeCarteira, investidor.conta);
+                        investidor.conta.adicionarCarteira(carteira);
+
+                        System.out.println("Carteira criada e adicionada com sucesso!");
+
+                    } catch (Exception e) {
+                        // Captura e trata qualquer exceção que ocorrer durante o processo
+                        System.out.println("Erro ao criar e adicionar a carteira: " + e.getMessage());
+                        e.printStackTrace();
+                    }
 
                     System.out.println("Carteira criada com sucesso!");
                     break;
