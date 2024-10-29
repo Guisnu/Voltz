@@ -5,12 +5,12 @@ import model.Criptoativo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MercadoService {
+public class MercadoService extends BaseService{
 
     private List<Criptoativo> criptoativos = new ArrayList<>();
 
     public MercadoService() {
-        //
+        //contrutor vazio
     }
 
     public List<Criptoativo> getCriptoativos() {
@@ -21,5 +21,10 @@ public class MercadoService {
         criptoativos.add(new Criptoativo("BNB", "BNB", 3099.42));
 
         return criptoativos;
+    }
+
+    @Override
+    public void executar(){
+        //Podemos adicionar executar a criação do mercado através desse método
     }
 }
