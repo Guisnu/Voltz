@@ -10,6 +10,5 @@ public class ImpostoSobreVenda extends BaseService{
     @Override
     public void executar() {
         // Podemos transferir a execução do calculo de imposto aqui
-        System.out.println("Executando cálculo de imposto em ImpostoService");
     }
 }
