@@ -13,7 +13,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
 
         MercadoService mercado = new MercadoService();
-        List<Criptoativo> criptoativosMercado = mercado.getCriptoativos();
+        List<Criptoativo> criptoativosMercado = mercado.executar();
 
         int op;
 
