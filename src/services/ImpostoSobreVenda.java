@@ -7,9 +7,11 @@ public class ImpostoSobreVenda extends BaseService{
 //        return valorVenda * taxaVenda;
 //    }
 
+
     @Override
-    public Object executar(Object param) {
+    public double executar(Object param) {
         double taxaVenda = 0.02; // Taxa padrão de 2%
-        return (double)param * taxaVenda;
+        double resultadoTaxaVenda = (double)param * taxaVenda;;
+        return resultadoTaxaVenda;
     }
 }
