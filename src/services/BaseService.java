@@ -2,5 +2,12 @@ package services;
 
 public abstract class BaseService {
 
-    public abstract void executar();
+    public Object executar(Object param) {
+        return null;
+    }
+
+    public Object executar() {
+        return null;
+    }
+
 }

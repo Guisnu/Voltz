@@ -23,8 +23,4 @@ public class MercadoService extends BaseService{
         return criptoativos;
     }
 
-    @Override
-    public void executar(){
-        //Podemos adicionar executar a criação do mercado através desse método
-    }
 }

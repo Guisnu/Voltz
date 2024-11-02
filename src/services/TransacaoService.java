@@ -4,7 +4,7 @@ import model.Carteira;
 import model.Criptoativo;
 import model.Transacao;
 
-public class TransacaoService extends BaseService {
+public class TransacaoService{
 
     private Transacao transacao;
     private Carteira carteira;
@@ -62,9 +62,10 @@ public class TransacaoService extends BaseService {
             throw new IllegalArgumentException("Saldo do criptoativo insuficiente!");
         }
 
-        double impostoSobreVenda = ImpostoSobreVenda.calcularImpostoSobreVenda(transacao.getValor());
-        criptoativoCarteira.setQuantidade(criptoativoCarteira.getSaldo() - (transacao.getValor() + impostoSobreVenda));
-        carteira.setSaldo(carteira.getSaldo() + (transacao.getValor() - impostoSobreVenda));
+        ImpostoSobreVenda impostoSobreVenda = new ImpostoSobreVenda();
+        Object resultadoSobreVenda = impostoSobreVenda.executar(transacao.getValor());
+        criptoativoCarteira.setQuantidade(criptoativoCarteira.getSaldo() - (transacao.getValor() + (double)resultadoSobreVenda));
+        carteira.setSaldo(carteira.getSaldo() + (transacao.getValor() - (double)resultadoSobreVenda));
 
         System.out.println("VENDA CONCLUÍDA!");
     }
@@ -76,9 +77,4 @@ public class TransacaoService extends BaseService {
         System.out.println("RESERVA CONCLUÍDA!");
     }
 
-    @Override
-    public void executar() {
-        // Defina aqui o que a execução fará no contexto de TransacaoService
-        System.out.println("Executando transação em TransacaoService");
-    }
 }
