@@ -4,7 +4,7 @@ import model.Carteira;
 import model.Criptoativo;
 import model.Transacao;
 
-public class TransacaoService{
+public class TransacaoService extends BaseService{
 
     private Transacao transacao;
     private Carteira carteira;
@@ -63,9 +63,9 @@ public class TransacaoService{
         }
 
         ImpostoSobreVenda impostoSobreVenda = new ImpostoSobreVenda();
-        Object resultadoSobreVenda = impostoSobreVenda.executar(transacao.getValor());
-        criptoativoCarteira.setQuantidade(criptoativoCarteira.getSaldo() - (transacao.getValor() + (double)resultadoSobreVenda));
-        carteira.setSaldo(carteira.getSaldo() + (transacao.getValor() - (double)resultadoSobreVenda));
+        double resultadoSobreVenda = impostoSobreVenda.executar(transacao.getValor());
+        criptoativoCarteira.setQuantidade(criptoativoCarteira.getSaldo() - (transacao.getValor() + resultadoSobreVenda));
+        carteira.setSaldo(carteira.getSaldo() + (transacao.getValor() - resultadoSobreVenda));
 
         System.out.println("VENDA CONCLUÍDA!");
     }

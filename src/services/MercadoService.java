@@ -9,9 +9,6 @@ public class MercadoService extends BaseService{
 
     private List<Criptoativo> criptoativos = new ArrayList<>();
 
-    public MercadoService() {
-        //contrutor vazio
-    }
 
     public List<Criptoativo> getCriptoativos() {
         // Simulando fetch dados de uma API de criptoativos
