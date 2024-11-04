@@ -1,3 +1,4 @@
+
 import enums.TipoOrdemEnum;
 import enums.TipoTransacaoEnum;
 import java.time.format.DateTimeFormatter;
@@ -130,8 +131,7 @@ public class Main {
 
 //                    Carteira carteira = new Carteira(nomeCarteira, investidor.conta);
 //                    investidor.conta.adicionarCarteira(carteira);
-
-                    try{
+                    try {
                         Carteira carteira = new Carteira(nomeCarteira, investidor.conta);
                         investidor.conta.adicionarCarteira(carteira);
 

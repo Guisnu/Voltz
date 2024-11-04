@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Carteira {
 
-    public int idCarteira = Investidor.contador;
+    public static int idCarteira = Investidor.getId();
     private String nome;
     private Conta conta;
     private double saldo;
@@ -14,9 +14,7 @@ public class Carteira {
     private List<Ordem> ordens = new ArrayList<>();
     private double saldoResv = 0.0;
 
-    // verificar a necessidade de adiconar o this.idCarteira
     public Carteira(String nome, Conta conta) {
-
         this.nome = nome;
         this.conta = conta;
     }

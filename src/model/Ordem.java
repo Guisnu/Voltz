@@ -3,13 +3,13 @@ package model;
 import enums.OrdemStatusEnum;
 import enums.TipoOrdemEnum;
 import enums.TipoTransacaoEnum;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Ordem {
 
+    private static int idOrdem = 0;
     private String codigo;
     private OrdemStatusEnum status = OrdemStatusEnum.EMABERTO;
     private TipoOrdemEnum tipo;
@@ -20,6 +20,7 @@ public class Ordem {
     private LocalDateTime dataOrdem = LocalDateTime.now();
 
     public Ordem(TipoOrdemEnum tipo, Carteira carteiraOrdem, Criptoativo criptoativoOrdem, double precoLimite) {
+        this.idOrdem = idOrdem++;
         this.tipo = tipo;
         this.criptoativoOrdem = criptoativoOrdem;
         this.carteiraOrdem = carteiraOrdem;
@@ -27,6 +28,10 @@ public class Ordem {
         setPrecoLimite(precoLimite);
         setQuantidade();
         setCodigo();
+    }
+
+    public static int getIdOrdem() {
+        return ++idOrdem;
     }
 
     public String getCodigo() {
@@ -76,7 +81,7 @@ public class Ordem {
     }
 
     public void setPrecoLimite(double precoLimite) {
-        if(precoLimite > carteiraOrdem.getSaldo()) {
+        if (precoLimite > carteiraOrdem.getSaldo()) {
             throw new IllegalArgumentException("Saldo insuficiente na carteira.");
         }
         this.precoLimite = precoLimite;
@@ -103,13 +108,13 @@ public class Ordem {
     }
 
     public void executarOrdem() {
-        if(this.status != OrdemStatusEnum.EMANDAMENTO) {
+        if (this.status != OrdemStatusEnum.EMANDAMENTO) {
             throw new IllegalArgumentException("Não é possível executar essa ordem!");
         }
 
         String tipoAux = String.valueOf(this.tipo);
-        TipoTransacaoEnum aux = tipoAux.equals(String.valueOf(TipoTransacaoEnum.COMPRA) ) ?
-                                TipoTransacaoEnum.COMPRA : TipoTransacaoEnum.VENDA;
+        TipoTransacaoEnum aux = tipoAux.equals(String.valueOf(TipoTransacaoEnum.COMPRA))
+                ? TipoTransacaoEnum.COMPRA : TipoTransacaoEnum.VENDA;
 
         this.status = OrdemStatusEnum.FINALIZADA;
 
@@ -122,7 +127,7 @@ public class Ordem {
 
     public void cancelarOrdem() {
 
-        if(this.status != OrdemStatusEnum.EMABERTO) {
+        if (this.status != OrdemStatusEnum.EMABERTO) {
             throw new IllegalArgumentException("Não é possível cancelar essa ordem!");
         }
 
@@ -139,7 +144,7 @@ public class Ordem {
                 ordem -> ordem.codigo.equals(this.codigo)
         ).findFirst().orElse(null);
 
-        if(ordemCarteira == null) {
+        if (ordemCarteira == null) {
             throw new IllegalArgumentException("Ordem não encontrada na carteira selecionada!");
         }
 
@@ -147,13 +152,13 @@ public class Ordem {
     }
 
     public String toString() {
-        return "Ordem={" +
-                "codigo=" + codigo +
-                ", status=" + status +
-                ", tipo=" + tipo +
-                ", criptoativo=" + criptoativoOrdem.getSimbolo() +
-                ", preço limite=" + precoLimite +
-                ", data=" + dataOrdem.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) +
-                '}';
+        return "Ordem={"
+                + "codigo=" + codigo
+                + ", status=" + status
+                + ", tipo=" + tipo
+                + ", criptoativo=" + criptoativoOrdem.getSimbolo()
+                + ", preço limite=" + precoLimite
+                + ", data=" + dataOrdem.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))
+                + '}';
     }
 }

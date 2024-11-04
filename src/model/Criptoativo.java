@@ -2,6 +2,7 @@ package model;
 
 public class Criptoativo {
 
+    private static int ordem = Ordem.getIdOrdem();
     private String nome;
     private String simbolo;
     private double precoAtual;
