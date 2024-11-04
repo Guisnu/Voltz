@@ -3,7 +3,7 @@ package model;
 public class Empresa {
 
     private int idEmpresa;
-    private int contador = 0;
+    public static int contador = 0;
     private String razaoSocial;
     private String nomeFantasia;
     private String cnpj;
@@ -25,6 +25,10 @@ public class Empresa {
 
     public String getCnpj() {
         return cnpj;
+    }
+
+    public int getIdEmpresa() {
+        return contador;
     }
 
 }
