@@ -5,10 +5,9 @@ import model.Criptoativo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MercadoService extends BaseService{
+public class MercadoService extends BaseService {
 
     private List<Criptoativo> criptoativos = new ArrayList<>();
-
 
 //    public List<Criptoativo> getCriptoativos() {
 //        // Simulando fetch dados de uma API de criptoativos
@@ -19,7 +18,6 @@ public class MercadoService extends BaseService{
 //
 //        return criptoativos;
 //    }
-
     @Override
     public List<Criptoativo> executar() {
         // Simulando fetch dados de uma API de criptoativos

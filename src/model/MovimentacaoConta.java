@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 public class MovimentacaoConta {
 
     private Conta conta;
-    private Empresa empresa;
     private TipoMovimentacaoEnum tipo;
     private double valor;
     private LocalDateTime data = LocalDateTime.now();
