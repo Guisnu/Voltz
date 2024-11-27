@@ -23,7 +23,7 @@ public class Main {
         //         "teste@",
         //         "teste"
         // );
-        System.out.print("Qual seu Nome: ");
+        System.out.print("Seu Nome: ");
         String nomeinvestidor = sc.nextLine();
 
         System.out.print("Seu melhor Email: ");
