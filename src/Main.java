@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 import model.*;
+import services.LogService;
 import services.MercadoService;
 
 public class Main {
@@ -18,29 +19,24 @@ public class Main {
 
         int op;
 
-        // Investidor investidor = new Investidor(
-        //         "Gui",
-        //         "teste@",
-        //         "teste"
-        // );
-        System.out.print("Seu Nome: ");
-        String nomeinvestidor = sc.nextLine();
+//        System.out.print("Seu Nome: ");
+//        String nomeinvestidor = sc.nextLine();
+//
+//        System.out.print("Seu melhor Email: ");
+//        String emailinvestidor = sc.nextLine();
+//
+//        System.out.print("Senha: ");
+//        String senhainvestidor = sc.nextLine();
+//
+//        Investidor investidor = new Investidor(nomeinvestidor, emailinvestidor, senhainvestidor);
+//        System.out.println(investidor.conta.getId());
 
-        System.out.print("Seu melhor Email: ");
-        String emailinvestidor = sc.nextLine();
+        Investidor investidor = new Investidor(
+                "Gui",
+                "teste@",
+                "teste"
+        );
 
-        System.out.print("Senha: ");
-        String senhainvestidor = sc.nextLine();
-
-        Investidor investidor = new Investidor(nomeinvestidor, emailinvestidor, senhainvestidor);
-        System.out.println(investidor.conta.getId());
-
-        // Investidor investidor = new Investidor(
-        //         1,
-        //         "Gui",
-        //         "teste@",
-        //         "teste"
-        // );
         System.out.println("            SISTEMA DE INVESTIMENTO         ");
         System.out.println("                  BEM VINDO                 ");
 
@@ -129,8 +125,6 @@ public class Main {
                     System.out.print("Informe o nome da carteira: ");
                     String nomeCarteira = sc.next() + sc.nextLine();
 
-//                    Carteira carteira = new Carteira(nomeCarteira, investidor.conta);
-//                    investidor.conta.adicionarCarteira(carteira);
                     try {
                         Carteira carteira = new Carteira(nomeCarteira, investidor.conta);
                         investidor.conta.adicionarCarteira(carteira);
@@ -308,6 +302,7 @@ public class Main {
                         );
                     }
 
+                    LogService.registrarTransacoes(transacoesCarteira, carteiraEVTransacoes);
                     break;
                 case 11:
                     System.out.println("----------------------------------------------");
