@@ -5,7 +5,6 @@ import java.util.List;
 
 public class Carteira {
 
-    public static int idCarteira = Investidor.getId();
     private String nome;
     private Conta conta;
     private double saldo;

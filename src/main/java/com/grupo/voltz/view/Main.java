@@ -1,4 +1,4 @@
-package com.grupo.voltz;
+package com.grupo.voltz.view;
 
 import com.grupo.voltz.enums.TipoOrdemEnum;
 import com.grupo.voltz.enums.TipoTransacaoEnum;
@@ -29,25 +29,32 @@ public class Main {
 //        System.out.print("Senha: ");
 //        String senhainvestidor = sc.nextLine();
 //
-//        Investidor investidor = new Investidor(nomeinvestidor, emailinvestidor, senhainvestidor);
+//        Conta conta = new Conta(nomeinvestidor, emailinvestidor, senhainvestidor);
 //        System.out.println(investidor.conta.getId());
 
-        Investidor investidor = new Investidor(
-                "Gui",
+        Conta conta = new Conta(
                 "teste@",
                 "teste"
         );
+
+        String nomeInvestidor;
+
+        if (conta.getNomeInvestidor() == null){
+            nomeInvestidor = "Investidor";
+        }else {
+            nomeInvestidor = conta.getNomeInvestidor();
+        }
 
         System.out.println("            SISTEMA DE INVESTIMENTO         ");
         System.out.println("                  BEM VINDO                 ");
 
         System.out.println("");
-        System.out.println("Olá, " + investidor.getNome() + "!");
+        System.out.println("Olá, " + nomeInvestidor + "!");
         System.out.println("");
 
         do {
 
-            List<Carteira> carteirasInvestidor = investidor.conta.getCarteiras();
+            List<Carteira> carteirasInvestidor = conta.getCarteiras();
 
             System.out.println("----------------------------------------------");
             System.out.println("|                MENU PRINCIPAL               |");
@@ -84,7 +91,7 @@ public class Main {
             System.out.println("----------------------------------------------");
             System.out.print("Opção: ");
             op = sc.nextInt();
-            System.out.println("");
+            System.out.println(" ");
 
             switch (op) {
                 case 1:
@@ -93,7 +100,7 @@ public class Main {
                     System.out.println("----------------------------------------------");
                     System.out.print("Informe a quantidade do depósito: ");
                     double deposito = sc.nextDouble();
-                    boolean result = investidor.conta.depositar(deposito);
+                    boolean result = conta.depositar(deposito);
                     if (!result) {
                         break;
                     }
@@ -103,7 +110,7 @@ public class Main {
                     System.out.println("----------------------------------------------");
                     System.out.println("|              SALDO INVESTIDOR              |");
                     System.out.println("----------------------------------------------");
-                    System.out.println("Saldo atual: R$" + investidor.conta.getSaldo());
+                    System.out.println("Saldo atual: R$" + conta.getSaldo());
                     break;
                 case 3:
                     System.out.println("----------------------------------------------");
@@ -112,7 +119,7 @@ public class Main {
                     System.out.print("Informe a quantidade do saque: ");
                     double saque = sc.nextDouble();
 
-                    if (investidor.conta.sacar(saque)) {
+                    if (conta.sacar(saque)) {
                         System.out.println("Valor sacado com sucesso!");
                     } else {
                         System.out.println("Saldo insuficiente!");
@@ -127,8 +134,8 @@ public class Main {
                     String nomeCarteira = sc.next() + sc.nextLine();
 
                     try {
-                        Carteira carteira = new Carteira(nomeCarteira, investidor.conta);
-                        investidor.conta.adicionarCarteira(carteira);
+                        Carteira carteira = new Carteira(nomeCarteira, conta);
+                        conta.adicionarCarteira(carteira);
 
                         System.out.println("Carteira criada e adicionada com sucesso!");
 
@@ -556,6 +563,6 @@ public class Main {
     private static void voltarMenuPrincipal(Scanner sc) {
         System.out.println("\nPressione Enter para voltar ao menu principal...");
         sc.nextLine();
-        sc.nextLine();
+//        sc.nextLine();
     }
 }

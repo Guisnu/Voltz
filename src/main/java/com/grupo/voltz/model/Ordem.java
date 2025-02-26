@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Ordem {
 
-    private static int idOrdem = 0;
+    private static int idOrdem;
     private String codigo;
     private OrdemStatusEnum status = OrdemStatusEnum.EMABERTO;
     private TipoOrdemEnum tipo;
@@ -20,7 +20,6 @@ public class Ordem {
     private LocalDateTime dataOrdem = LocalDateTime.now();
 
     public Ordem(TipoOrdemEnum tipo, Carteira carteiraOrdem, Criptoativo criptoativoOrdem, double precoLimite) {
-        this.idOrdem = idOrdem++;
         this.tipo = tipo;
         this.criptoativoOrdem = criptoativoOrdem;
         this.carteiraOrdem = carteiraOrdem;
@@ -28,10 +27,6 @@ public class Ordem {
         setPrecoLimite(precoLimite);
         setQuantidade();
         setCodigo();
-    }
-
-    public static int getIdOrdem() {
-        return ++idOrdem;
     }
 
     public String getCodigo() {
@@ -95,12 +90,11 @@ public class Ordem {
         carteiraOrdem.adicionarOrdens(this);
     }
 
-    /**
-     * Envia a ordem para executar no orgão competente(corretora, etc)
-     */
+    /***
+     Envia a ordem para executar no orgão competente(corretora, etc)
+     ***/
     public void enviarOrdem() {
         this.getOrdemCarteira();
-
         this.status = OrdemStatusEnum.EMANDAMENTO;
 
         Transacao transacao = new Transacao(TipoTransacaoEnum.RESERVA, this.criptoativoOrdem, this.precoLimite);
