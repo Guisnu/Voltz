@@ -1,11 +1,18 @@
 package com.grupo.voltz.view;
 
+import com.grupo.voltz.dao.ContaDao;
 import com.grupo.voltz.enums.TipoOrdemEnum;
 import com.grupo.voltz.enums.TipoTransacaoEnum;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 import com.grupo.voltz.model.*;
+import com.grupo.voltz.services.ConnectionService;
 import com.grupo.voltz.services.LogService;
 import com.grupo.voltz.services.MercadoService;
 
@@ -14,6 +21,20 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
+
+       try{
+           ContaDao conta = new ContaDao();
+           System.out.println("Conexão realizada com sucesso ✅");
+           System.out.println("Pressione ENTER para continuar...");
+           sc.nextLine();
+       }
+       catch (SQLException e){
+           System.out.println("Erro ao realizar conexão ❌");
+           System.err.println(e.getMessage());
+           System.out.println("Pressione ENTER para continuar...");
+           sc.nextLine();
+           System.exit(1);
+       }
 
         MercadoService mercado = new MercadoService();
         List<Criptoativo> criptoativosMercado = mercado.executar();
@@ -136,8 +157,6 @@ public class Main {
                     try {
                         Carteira carteira = new Carteira(nomeCarteira, conta);
                         conta.adicionarCarteira(carteira);
-
-                        System.out.println("Carteira criada e adicionada com sucesso!");
 
                     } catch (Exception e) {
                         // Captura e trata qualquer exceção que ocorrer durante o processo
@@ -563,6 +582,6 @@ public class Main {
     private static void voltarMenuPrincipal(Scanner sc) {
         System.out.println("\nPressione Enter para voltar ao menu principal...");
         sc.nextLine();
-//        sc.nextLine();
+        sc.nextLine();
     }
 }

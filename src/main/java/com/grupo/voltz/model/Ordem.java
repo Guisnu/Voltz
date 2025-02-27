@@ -21,8 +21,8 @@ public class Ordem {
 
     public Ordem(TipoOrdemEnum tipo, Carteira carteiraOrdem, Criptoativo criptoativoOrdem, double precoLimite) {
         this.tipo = tipo;
-        this.criptoativoOrdem = criptoativoOrdem;
         this.carteiraOrdem = carteiraOrdem;
+        this.criptoativoOrdem = criptoativoOrdem;
 
         setPrecoLimite(precoLimite);
         setQuantidade();

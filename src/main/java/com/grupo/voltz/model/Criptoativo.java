@@ -2,7 +2,7 @@ package com.grupo.voltz.model;
 
 public class Criptoativo {
 
-    private static int ordem = Ordem.getIdOrdem();
+    private String idCriptoativo;
     private String nome;
     private String simbolo;
     private double precoAtual;
