@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Conta {
 
-    private static Integer idConta;
+    private static long idConta;
     private Double saldo = 0.0;
     private String nomeInvestidor;
     private String emailInvestidor;
@@ -15,6 +15,17 @@ public class Conta {
     private List<Carteira> carteiras = new ArrayList<>();
     private List<MovimentacaoConta> movimentacoes = new ArrayList<>();
     private List<Transacao> transacoes = new ArrayList<>();
+
+    public Conta(Long id, String nomeInvestidor, String emailInvestidor, String senhaInvestidor, Double saldo, List<Carteira> carteiras, int movimentacoes) {
+        this.idConta = id;
+        this.nomeInvestidor = nomeInvestidor;
+        this.emailInvestidor = emailInvestidor;
+        this.senhaInvestidor = senhaInvestidor;
+        this.saldo = saldo;
+
+        this.carteiras = new ArrayList<>(carteiras);
+        this.movimentacoes = new ArrayList<>(movimentacoes);
+    }
 
     public Conta(String nomeInvestidor, String emailInvestidor, String senhaInvestidor){
         this.nomeInvestidor = nomeInvestidor;
@@ -29,6 +40,15 @@ public class Conta {
 //    public static Integer getId() {
 //        return ++idConta;
 //    }
+
+
+    public static long getIdConta() {
+        return idConta;
+    }
+
+    public static void setIdConta(long idConta) {
+        Conta.idConta = idConta;
+    }
 
     public Double getSaldo() {
         return saldo;

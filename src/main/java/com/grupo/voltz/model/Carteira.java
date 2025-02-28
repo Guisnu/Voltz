@@ -13,6 +13,8 @@ public class Carteira {
     private List<Ordem> ordens = new ArrayList<>();
     private double saldoResv = 0.0;
 
+    public Carteira(){}
+
     public Carteira(String nome, Conta conta) {
         this.nome = nome;
         this.conta = conta;
