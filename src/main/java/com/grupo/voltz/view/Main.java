@@ -1,13 +1,13 @@
 package com.grupo.voltz.view;
 
+
+import com.grupo.voltz.Exception.EntidadeNaoEncontradaException;
 import com.grupo.voltz.dao.ContaDao;
 import com.grupo.voltz.enums.TipoOrdemEnum;
 import com.grupo.voltz.enums.TipoTransacaoEnum;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
@@ -18,51 +18,79 @@ import com.grupo.voltz.services.MercadoService;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
 
+        int op;
+        ContaDao dao = null;
         Scanner sc = new Scanner(System.in);
 
-       try{
-           ContaDao conta = new ContaDao();
-           System.out.println("Conexão realizada com sucesso ✅");
-           System.out.println("Pressione ENTER para continuar...");
-           sc.nextLine();
-       }
-       catch (SQLException e){
-           System.out.println("Erro ao realizar conexão ❌");
-           System.err.println(e.getMessage());
-           System.out.println("Pressione ENTER para continuar...");
-           sc.nextLine();
-           System.exit(1);
-       }
+        try {
+            dao = new ContaDao();
+            System.out.println("--------------------------------------");
+            System.out.println("✅ Conexão realizada com sucesso ✅");
+            System.out.println("--------------------------------------");
+            System.out.println("Pressione ENTER para continuar...");
+            sc.nextLine();
+        } catch (SQLException e) {
+            System.out.println("--------------------------------------------------------------------------------------------");
+            System.out.println("❌ Erro ao realizar conexão Verifique o arquivo " + "ConnectionService" + " para realizar a conexão ❌");
+            System.out.println("--------------------------------------------------------------------------------------------");
+            System.err.println(e.getMessage());
+            System.out.println("Pressione ENTER para continuar...");
+            sc.nextLine();
+            System.exit(1);
+        }
 
         MercadoService mercado = new MercadoService();
         List<Criptoativo> criptoativosMercado = mercado.executar();
 
-        int op;
+        boolean emailValido = false;
+        String email = "";
+        String nome = "";
+        String senha = "";
 
-//        System.out.print("Seu Nome: ");
-//        String nomeinvestidor = sc.nextLine();
-//
-//        System.out.print("Seu melhor Email: ");
-//        String emailinvestidor = sc.nextLine();
-//
-//        System.out.print("Senha: ");
-//        String senhainvestidor = sc.nextLine();
-//
-//        Conta conta = new Conta(nomeinvestidor, emailinvestidor, senhainvestidor);
-//        System.out.println(investidor.conta.getId());
+        while (!emailValido) {
+            System.out.println("Digite seu email:");
+            email = sc.nextLine();
 
-        Conta conta = new Conta(
-                "teste@",
-                "teste"
-        );
+            try {
+                if (dao.pesquisar_email(email)) {
+                    System.out.println("Email já cadastrado. Tente novamente.");
+                } else {
+                    emailValido = true;
+                }
+            } catch (SQLException e) {
+                System.out.println("Erro ao verificar email: " + e.getMessage());
+            }
+        }
+
+        System.out.println("Digite seu nome:");
+        nome = sc.nextLine();
+
+        System.out.println("Digite sua senha:");
+        senha = sc.nextLine();
+
+        Conta conta = new Conta(nome, email, senha);
+
+//        Conta conta = new Conta(
+//                "teste@",
+//                "teste"
+//        );
+//        Carteira testetop = new Carteira("teste", conta);
+//        conta.adicionarCarteira(testetop);
+
+//        try {
+//
+//            dao.cadastrar(conta);
+//        }catch (SQLException e){
+//            System.out.println("Email já cadastrado!");
+//        }
 
         String nomeInvestidor;
 
-        if (conta.getNomeInvestidor() == null){
+        if (conta.getNomeInvestidor() == null) {
             nomeInvestidor = "Investidor";
-        }else {
+        } else {
             nomeInvestidor = conta.getNomeInvestidor();
         }
 

@@ -5,16 +5,15 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConnectionService {
-    private String login;
-    private String senha;
 
     private static final String URL = "jdbc:oracle:thin:@oracle.fiap.com.br:1521:orcl";
 
-    private static final String USUARIO = ""; //TIPS: user sqlserver oracle com "rm ou pf" na frente
+    private static final String USUARIO = "rm554327"; //Todo: user sqlserver oracle com "rm ou pf" na frente;
 
-    private static final String SENHA = "";//TIPS: senha sqlserver oracle
+    private static final String SENHA = "020604"; //Todo: senha sqlserver oracle;
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL,USUARIO,SENHA);
     }
+
 }

@@ -85,8 +85,6 @@ public class Conta {
     }
 
     public List<MovimentacaoConta> getMovimentacoes() {
-        System.out.println("===MOVIMENTAÇÕES NA CONTA===");
-
         for (MovimentacaoConta movimentacao : movimentacoes) {
             System.out.println("Tipo: " + movimentacao.getTipo() + ", Valor: " + movimentacao.getValor());
         }
