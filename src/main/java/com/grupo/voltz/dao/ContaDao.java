@@ -66,4 +66,33 @@ public class ContaDao {
         return lista;
     }
 
+    public Conta login(String email, String senha) throws SQLException {
+        String sql = "SELECT * FROM Conta WHERE emailInvestidor = ? AND senhaInvestidor = ?";
+        PreparedStatement stm = conexao.prepareStatement(sql);
+        stm.setString(1, email);
+        stm.setString(2, senha);
+        ResultSet result = stm.executeQuery();
+
+        if (result.next()) {
+            // Obtenção dos dados da conta
+            Long id = result.getLong("id_conta");
+            String nome = result.getString("nomeInvestidor");
+            double saldo = result.getDouble("saldo");
+            int numeroCarteiras = result.getInt("carteiras");
+            int movimentacoes = result.getInt("movimentacoes");
+
+            List<Carteira> carteiras = new ArrayList<>();
+            for (int i = 0; i < numeroCarteiras; i++) {
+                carteiras.add(new Carteira());
+            }
+
+            // Constrói o objeto Conta com os dados recuperados
+
+            // Não é feita nenhuma chamada para cadastrar a conta no banco,
+            // pois ela já existe.
+            return new Conta(id, nome, email, senha, saldo, carteiras, movimentacoes);
+        }
+        return null;
+    }
+
 }
