@@ -37,10 +37,6 @@ public class Conta {
         this.senhaInvestidor = senhaInvestidor;
     }
 
-//    public static Integer getId() {
-//        return ++idConta;
-//    }
-
 
     public static long getIdConta() {
         return idConta;

@@ -95,4 +95,19 @@ public class ContaDao {
         return null;
     }
 
+    public void atualizarNomeInvestidor(Long idConta, String novoNome) throws SQLException {
+        String sql = "UPDATE Conta SET nomeInvestidor = ? WHERE id_conta = ?";
+        PreparedStatement stm = conexao.prepareStatement(sql);
+        stm.setString(1, novoNome);
+        stm.setLong(2, idConta);
+        stm.executeUpdate();
+    }
+
+    public void deletarConta(Long idConta) throws SQLException {
+        String sql = "DELETE FROM Conta WHERE id_conta = ?";
+        PreparedStatement stm = conexao.prepareStatement(sql);
+        stm.setLong(1, idConta);
+        stm.executeUpdate();
+    }
+
 }
