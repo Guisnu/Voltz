@@ -5,7 +5,6 @@ import java.util.List;
 
 public class Carteira {
 
-    public static int idCarteira = Investidor.getId();
     private String nome;
     private Conta conta;
     private double saldo;
@@ -13,6 +12,8 @@ public class Carteira {
     private List<Transacao> transacoes = new ArrayList<>();
     private List<Ordem> ordens = new ArrayList<>();
     private double saldoResv = 0.0;
+
+    public Carteira(){}
 
     public Carteira(String nome, Conta conta) {
         this.nome = nome;

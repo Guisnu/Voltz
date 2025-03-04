@@ -6,28 +6,44 @@ import java.util.List;
 
 public class Conta {
 
-    private static Integer idConta = 0;
-    public static Integer numConta = 0010;
-    public Integer agencia = 0001;
+    private static long idConta;
     private Double saldo = 0.0;
+    private String nomeInvestidor;
+    private String emailInvestidor;
+    private String senhaInvestidor;
     private List<Empresa> empresas = new ArrayList<>();
     private List<Carteira> carteiras = new ArrayList<>();
     private List<MovimentacaoConta> movimentacoes = new ArrayList<>();
     private List<Transacao> transacoes = new ArrayList<>();
 
-    public Conta(Integer idConta, Investidor investidor) {
+    public Conta(Long id, String nomeInvestidor, String emailInvestidor, String senhaInvestidor, Double saldo, List<Carteira> carteiras, int movimentacoes) {
+        this.idConta = id;
+        this.nomeInvestidor = nomeInvestidor;
+        this.emailInvestidor = emailInvestidor;
+        this.senhaInvestidor = senhaInvestidor;
+        this.saldo = saldo;
+
+        this.carteiras = new ArrayList<>(carteiras);
+        this.movimentacoes = new ArrayList<>(movimentacoes);
     }
 
-    public static Integer getId() {
-        return ++idConta;
+    public Conta(String nomeInvestidor, String emailInvestidor, String senhaInvestidor){
+        this.nomeInvestidor = nomeInvestidor;
+        this.emailInvestidor = emailInvestidor;
+        this.senhaInvestidor = senhaInvestidor;
+    }
+    public Conta(String emailInvestidor, String senhaInvestidor){
+        this.emailInvestidor = emailInvestidor;
+        this.senhaInvestidor = senhaInvestidor;
     }
 
-    public Integer getNumConta() {
-        return ++numConta;
+
+    public static long getIdConta() {
+        return idConta;
     }
 
-    public Integer getAgencia() {
-        return agencia;
+    public static void setIdConta(long idConta) {
+        Conta.idConta = idConta;
     }
 
     public Double getSaldo() {
@@ -41,6 +57,18 @@ public class Conta {
     public List<Carteira> getCarteiras() {
         return carteiras;
     }
+
+    public String getNomeInvestidor() {return nomeInvestidor;}
+
+    public void setNomeInvestidor(String nomeInvestidor) {this.nomeInvestidor = nomeInvestidor;}
+
+    public String getEmailInvestidor() {return emailInvestidor;}
+
+    public void setEmailInvestidor(String emailInvestidor) {this.emailInvestidor = emailInvestidor;}
+
+    public String getSenhaInvestidor() {return senhaInvestidor;}
+
+    public void setSenhaInvestidor(String senhaInvestidor) {this.senhaInvestidor = senhaInvestidor;}
 
     public void adicionarCarteira(Carteira carteira) {
         carteiras.add(carteira);
@@ -73,8 +101,6 @@ public class Conta {
     }
 
     public List<MovimentacaoConta> getMovimentacoes() {
-        System.out.println("===MOVIMENTAÇÕES NA CONTA===");
-
         for (MovimentacaoConta movimentacao : movimentacoes) {
             System.out.println("Tipo: " + movimentacao.getTipo() + ", Valor: " + movimentacao.getValor());
         }
