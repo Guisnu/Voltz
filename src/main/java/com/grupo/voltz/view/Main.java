@@ -26,8 +26,10 @@ public class Main {
             System.out.println("Pressione ENTER para continuar...");
             sc.nextLine();
         } catch (SQLException e) {
-            System.out.println("Erro ao realizar conexão. Verifique sua configuração!");
-            e.printStackTrace();
+            System.out.println("-------------------------------------------------------------");
+            System.out.println("Erro ao realizar conexão. Verifique sua ConnectionService!❌");
+            System.out.println("-------------------------------------------------------------");
+            System.err.println(e);
             System.exit(1);
         }
 
