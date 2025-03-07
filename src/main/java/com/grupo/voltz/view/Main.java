@@ -59,12 +59,12 @@ public class Main {
                             conta = dao.login(email, senha);
 
                             if (conta == null) {
-                                System.out.println("\nEmail ou senha inválidos. Tente novamente. 🤦\u200D♀️\n");
+                                System.out.println("\nEmail ou senha inválidos. Tente novamente. 🤦\n");
                             } else {
                                 if (conta.getNomeInvestidor() == null || conta.getNomeInvestidor().trim().isEmpty()) {
                                     conta.setNomeInvestidor("Investidor");
                                 }
-                                System.out.println("Login realizado com sucesso!\n");
+                                System.out.println("\nLogin realizado com sucesso!\n");
                             }
                             break;
 
@@ -81,7 +81,7 @@ public class Main {
 
                             try {
                                 dao.cadastrar(novaConta);
-                                System.out.println("Cadastro realizado com sucesso!");
+                                System.out.println("\nCadastro realizado com sucesso!\n");
                             } catch (SQLException e) {
                                 System.out.println("Erro no cadastro: " + e.getMessage());
                             }
@@ -94,7 +94,7 @@ public class Main {
                             break;
 
                         default:
-                            System.out.println("Opção inválida.");
+                            System.out.println("\nOpção inválida.\n");
                     }
                 } while (conta == null && opAcesso != 0);
             } else {
