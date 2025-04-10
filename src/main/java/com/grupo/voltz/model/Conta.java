@@ -6,17 +6,16 @@ import java.util.List;
 
 public class Conta {
 
-    private static long idConta;
+    private Integer idConta;
     private Double saldo = 0.0;
     private String nomeInvestidor;
     private String emailInvestidor;
     private String senhaInvestidor;
-    private List<Empresa> empresas = new ArrayList<>();
     private List<Carteira> carteiras = new ArrayList<>();
     private List<MovimentacaoConta> movimentacoes = new ArrayList<>();
     private List<Transacao> transacoes = new ArrayList<>();
 
-    public Conta(Long id, String nomeInvestidor, String emailInvestidor, String senhaInvestidor, Double saldo, List<Carteira> carteiras, int movimentacoes) {
+    public Conta(Integer id, String nomeInvestidor, String emailInvestidor, String senhaInvestidor, Double saldo, List<Carteira> carteiras, int movimentacoes) {
         this.idConta = id;
         this.nomeInvestidor = nomeInvestidor;
         this.emailInvestidor = emailInvestidor;
@@ -38,12 +37,8 @@ public class Conta {
     }
 
 
-    public static long getIdConta() {
+    public Integer getIdConta() {
         return idConta;
-    }
-
-    public static void setIdConta(long idConta) {
-        Conta.idConta = idConta;
     }
 
     public Double getSaldo() {
@@ -76,24 +71,6 @@ public class Conta {
 
     public void removerCarteira(Carteira carteira) {
         carteiras.remove(carteira);
-    }
-
-    public void adicionarEmpresa(Empresa empresa) {
-        empresas.add(empresa);
-    }
-
-    public void removerEmpresa(Empresa empresa) {
-        empresas.remove(empresa);
-    }
-
-    public List<Empresa> getEmpresas() {
-        System.out.println("===EMPRESAS===");
-
-        for (Empresa empresa : empresas) {
-            System.out.println("Razão Social: " + empresa.getRazaoSocial() + ", CNPJ: " + empresa.getCnpj());
-        }
-
-        return empresas;
     }
 
     public void adicionarMovimentacao(MovimentacaoConta movimentacaoConta) {
@@ -135,6 +112,7 @@ public class Conta {
         }
         return historico;
     }
+
 
     // @Override
     // public String toString() {
