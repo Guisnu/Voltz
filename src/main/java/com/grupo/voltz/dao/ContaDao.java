@@ -23,7 +23,7 @@ public class ContaDao {
     }
 
     public void cadastrar(Conta conta) throws SQLException {
-        PreparedStatement stm = conexao.prepareStatement("INSERT INTO Conta (id_conta, nomeinvestidor, emailInvestidor, senhaInvestidor, saldo, carteiras, movimentacoes ) VALUES (seq_produto.nextval,?,?,?,?,?,?)");
+        PreparedStatement stm = conexao.prepareStatement("INSERT INTO Conta (id_conta, nomeinvestidor, emailInvestidor, senhaInvestidor, saldo, carteiras, movimentacoes ) VALUES (seq_conta.nextval,?,?,?,?,?,?)");
         stm.setString(1, conta.getNomeInvestidor());
         stm.setString(2, conta.getEmailInvestidor());
         stm.setString(3, conta.getSenhaInvestidor());
@@ -40,7 +40,7 @@ public class ContaDao {
     }
 
     private Conta parseConta(ResultSet result) throws SQLException {
-        Long id = result.getLong("id_conta");
+        Integer id = result.getInt("id_conta");
         String nome = result.getString("nomeInvestidor");
         String email = result.getString("emailInvestidor");
         String senha = result.getString("senhaInvestidor");
@@ -75,7 +75,7 @@ public class ContaDao {
 
         if (result.next()) {
             // Obtenção dos dados da conta
-            Long id = result.getLong("id_conta");
+            Integer id = result.getInt("id_conta");
             String nome = result.getString("nomeInvestidor");
             double saldo = result.getDouble("saldo");
             int numeroCarteiras = result.getInt("carteiras");
@@ -95,18 +95,18 @@ public class ContaDao {
         return null;
     }
 
-    public void atualizarNomeInvestidor(Long idConta, String novoNome) throws SQLException {
+    public void atualizarNomeInvestidor(Integer idConta, String novoNome) throws SQLException {
         String sql = "UPDATE Conta SET nomeInvestidor = ? WHERE id_conta = ?";
         PreparedStatement stm = conexao.prepareStatement(sql);
         stm.setString(1, novoNome);
-        stm.setLong(2, idConta);
+        stm.setInt(2, idConta);
         stm.executeUpdate();
     }
 
-    public void deletarConta(Long idConta) throws SQLException {
+    public void deletarConta(Integer idConta) throws SQLException {
         String sql = "DELETE FROM Conta WHERE id_conta = ?";
         PreparedStatement stm = conexao.prepareStatement(sql);
-        stm.setLong(1, idConta);
+        stm.setInt(1, idConta);
         stm.executeUpdate();
     }
 
