@@ -2,7 +2,7 @@ package com.grupo.voltz.model;
 
 public class Criptoativo {
 
-    private String idCriptoativo;
+    private Integer idCriptoativo;
     private String nome;
     private String simbolo;
     private double precoAtual;
@@ -41,4 +41,8 @@ public class Criptoativo {
     public void setQuantidade(double valor) {
         this.quantidade = valor / this.precoAtual;
     }
+
+    public Integer getId() {return idCriptoativo;}
+
+    public void setId(Integer Id) {this.idCriptoativo = Id;}
 }
