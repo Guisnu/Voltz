@@ -23,7 +23,7 @@ public class ContaDao {
     }
 
     public void cadastrar(Conta conta) throws SQLException {
-        PreparedStatement stm = conexao.prepareStatement("INSERT INTO Conta (id_conta, nomeinvestidor, emailInvestidor, senhaInvestidor, saldo, carteiras, movimentacoes ) VALUES (seq_conta.nextval,?,?,?,?,?,?)");
+        PreparedStatement stm = conexao.prepareStatement("INSERT INTO Conta (nomeinvestidor, emailInvestidor, senhaInvestidor, saldo, carteiras, movimentacoes ) VALUES (?,?,?,?,?,?)");
         stm.setString(1, conta.getNomeInvestidor());
         stm.setString(2, conta.getEmailInvestidor());
         stm.setString(3, conta.getSenhaInvestidor());
@@ -103,11 +103,22 @@ public class ContaDao {
         stm.executeUpdate();
     }
 
-    public void deletarConta(Integer idConta) throws SQLException {
-        String sql = "DELETE FROM Conta WHERE id_conta = ?";
-        PreparedStatement stm = conexao.prepareStatement(sql);
-        stm.setInt(1, idConta);
-        stm.executeUpdate();
+    public void deletarConta(Integer id_Conta) throws SQLException {
+
+        String sqlCarteiras = "DELETE FROM Carteira WHERE idconta = ?";
+        PreparedStatement stmCarteiras = conexao.prepareStatement(sqlCarteiras);
+        stmCarteiras.setInt(1, id_Conta);
+        stmCarteiras.executeUpdate();
+
+        String sqlTransacoes = "DELETE FROM Transacao WHERE idconta = ?";
+        PreparedStatement stmTransacoes = conexao.prepareStatement(sqlTransacoes);
+        stmTransacoes.setInt(1, id_Conta);
+        stmTransacoes.executeUpdate();
+
+        String sqlConta = "DELETE FROM Conta WHERE id_conta = ?";
+        PreparedStatement stmConta = conexao.prepareStatement(sqlConta);
+        stmConta.setInt(1, id_Conta);
+        stmConta.executeUpdate();
     }
 
 }

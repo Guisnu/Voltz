@@ -14,8 +14,9 @@ import com.grupo.voltz.services.MercadoService;
 public class Main {
 
     public static void main(String[] args) throws SQLException {
+        boolean SairMenuDao = false;
         ContaDao dao = null;
-        Scanner sc = new Scanner(System.in); // Scanner aberto uma única vez
+        Scanner sc = new Scanner(System.in);
         Conta conta = null;
 
         try {
@@ -36,7 +37,7 @@ public class Main {
         MercadoService mercado = new MercadoService();
         List<Criptoativo> criptoativosMercado = mercado.executar();
 
-        while (true) { // Loop externo para controle de login/logout
+        while (true) {
             if (conta == null) {
                 int opAcesso;
                 do {
@@ -110,9 +111,7 @@ public class Main {
                     System.out.println("|  2  | Visualizar saldo Conta                |");
                     System.out.println("|  3  | Sacar                                 |");
                     System.out.println("|  4  | Criar carteira de investimento        |");
-                    System.out.println("|  98 | Deletar conta                         |");
-                    System.out.println("|  99 | Mudar nome de usuario                 |");
-                    System.out.println("| 100 | Lista usuarios (administrativo)       |");
+                    System.out.println("| 100 | Teste Bancos                          |");
                     System.out.println("|  0  | Sair                                  |");
 
                     List<Carteira> carteirasInvestidor = conta.getCarteiras();
@@ -174,53 +173,72 @@ public class Main {
                             }
                             break;
 
-                        case 99:
-                            System.out.println("Nome atual: " + conta.getNomeInvestidor());
-                            System.out.print("Digite o novo nome de investidor: ");
-                            sc.nextLine();
-                            String novoNome = sc.nextLine();
-
-                            if (novoNome.isEmpty()) {
-                                System.out.println("Nome inválido! O nome não pode ser vazio.");
-                                break;
-                            }
-
-                            try {
-                                dao.atualizarNomeInvestidor(conta.getIdConta(), novoNome);
-                                conta.setNomeInvestidor(novoNome);
-                                System.out.println("Nome atualizado com sucesso!");
-                            } catch (SQLException e) {
-                                System.out.println("Erro ao atualizar nome: " + e.getMessage());
-                            }
-                            break;
-
                         case 100:
-                            List<Conta> contas = dao.listar();
-                            for (Conta user : contas) {
-                                System.out.println("nome: " + user.getNomeInvestidor() + ", " + "Email: " + user.getEmailInvestidor() + ", " + "senha: " + user.getSenhaInvestidor() + ", " + "saldo: " + "R$" + user.getSaldo() + ", " + "carteiras: " + user.getCarteiras().size() + ", " + "movimentacoes: " + user.getMovimentacoes().size());
-                            }
-                            break;
+                            while(!SairMenuDao){
+                                int opDao;
+                                System.out.println(conta.getIdConta());
+                                System.out.println("Menu DAO");
+                                System.out.println("1 - Mudar nome de usuario");
+                                System.out.println("2 - Deletar conta");
+                                System.out.println("3 - Lista usuarios (administrativo)");
+                                System.out.println("4 - Sair");
 
-                        case 98:
-                            System.out.print("Tem certeza que deseja excluir sua conta? (S/N): ");
-                            sc.nextLine();
-                            String confirmacao = sc.nextLine().trim().toUpperCase();
+                                opDao =  sc.nextInt();
 
-                            if (!confirmacao.equals("S")) {
-                                System.out.println("Operação cancelada.");
-                                break;
-                            }
+                                switch (opDao) {
+                                    case 1:
+                                        System.out.println("Nome atual: " + conta.getNomeInvestidor());
+                                        System.out.print("Digite o novo nome de investidor: ");
+                                        sc.nextLine();
+                                        String novoNome = sc.nextLine();
 
-                            try {
-                                dao.deletarConta(conta.getIdConta());
-                                System.out.println("Conta deletada com sucesso! Retornando ao menu de login...");
-                                conta = null;
-                                opPrincipal = 0;
-                                continue;
-                            } catch (SQLException e) {
-                                System.out.println("Erro ao excluir conta: " + e.getMessage());
+                                        if (novoNome.isEmpty()) {
+                                            System.out.println("Nome inválido! O nome não pode ser vazio.");
+                                            break;
+                                        }
+
+                                        try {
+                                            dao.atualizarNomeInvestidor(conta.getIdConta(), novoNome);
+                                            conta.setNomeInvestidor(novoNome);
+                                            System.out.println("Nome atualizado com sucesso!");
+                                        } catch (SQLException e) {
+                                            System.out.println("Erro ao atualizar nome: " + e.getMessage());
+                                        }
+                                        break;
+
+                                    case 2:
+                                        System.out.print("Tem certeza que deseja excluir sua conta? (S/N): ");
+                                        sc.nextLine();
+                                        String confirmacao = sc.nextLine().trim().toUpperCase();
+
+                                        if (!confirmacao.equals("S")) {
+                                            System.out.println("Operação cancelada.");
+                                            break;
+                                        }
+
+                                        try {
+                                            dao.deletarConta(conta.getIdConta());
+                                            System.out.println("Conta deletada com sucesso! Retornando ao menu de login...");
+                                            conta = null;
+                                            opPrincipal = 0;
+                                            continue;
+                                        } catch (SQLException e) {
+                                            System.out.println("Erro ao excluir conta: " + e.getMessage());
+                                        }
+                                        break;
+
+                                    case 3:
+                                        List<Conta> contas = dao.listar();
+                                        for (Conta user : contas) {
+                                            System.out.println("nome: " + user.getNomeInvestidor() + ", " + "Email: " + user.getEmailInvestidor() + ", " + "senha: " + user.getSenhaInvestidor() + ", " + "saldo: " + "R$" + user.getSaldo() + ", " + "carteiras: " + user.getCarteiras().size() + ", " + "movimentacoes: " + user.getMovimentacoes().size());
+                                        }
+                                        break;
+
+                                    case 0:
+                                        System.out.println("Voltando para o menu...");
+                                        SairMenuDao = true;
+                                }
                             }
-                            break;
 
                         case 0:
                             System.out.println("Saindo da conta...");
