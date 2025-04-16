@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Carteira {
 
+    Integer idCarteira;
     private String nome;
     private Conta conta;
     private double saldo;
@@ -15,10 +16,17 @@ public class Carteira {
 
     public Carteira(){}
 
-    public Carteira(String nome, Conta conta) {
+    public Carteira(Integer idCarteira, String nome) {
+        this.idCarteira = idCarteira;
         this.nome = nome;
-        this.conta = conta;
     }
+    public Carteira( String nome) {
+        this.nome = nome;
+    }
+
+    public Integer getIdCarteira() {return idCarteira;}
+
+    public void setIdCarteira(Integer idCarteira) {this.idCarteira = idCarteira;}
 
     public String getNome() {
         return nome;
