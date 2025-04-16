@@ -1,5 +1,6 @@
 package com.grupo.voltz.view;
 
+import com.grupo.voltz.dao.CarteiraDao;
 import com.grupo.voltz.dao.ContaDao;
 import com.grupo.voltz.enums.TipoOrdemEnum;
 import com.grupo.voltz.enums.TipoTransacaoEnum;
@@ -15,12 +16,14 @@ public class Main {
 
     public static void main(String[] args) throws SQLException {
         boolean SairMenuDao = false;
-        ContaDao dao = null;
+        ContaDao contadao = null;
+        CarteiraDao carteiraDao = null;
         Scanner sc = new Scanner(System.in);
         Conta conta = null;
 
         try {
-            dao = new ContaDao();
+            contadao = new ContaDao();
+            carteiraDao = new CarteiraDao();
             System.out.println("--------------------------------------");
             System.out.println("✅ Conexão realizada com sucesso ✅");
             System.out.println("--------------------------------------");
@@ -59,11 +62,12 @@ public class Main {
                             System.out.print("Digite sua senha: ");
                             String senha = sc.nextLine();
 
-                            conta = dao.login(email, senha);
+                            conta = contadao.login(email, senha);
 
                             if (conta == null) {
                                 System.out.println("\nEmail ou senha inválidos. Tente novamente. 🤦\n");
                             } else {
+                                carteiraDao.recuperarCarteiras(conta);
                                 if (conta.getNomeInvestidor() == null || conta.getNomeInvestidor().trim().isEmpty()) {
                                     conta.setNomeInvestidor("Investidor");
                                 }
@@ -83,7 +87,7 @@ public class Main {
                             Conta novaConta = new Conta(nome, emailCadastro, senhaCadastro);
 
                             try {
-                                dao.cadastrar(novaConta);
+                                contadao.cadastrar(novaConta);
                                 System.out.println("\nCadastro realizado com sucesso!\n");
                             } catch (SQLException e) {
                                 System.out.println("Erro no cadastro: " + e.getMessage());
@@ -99,7 +103,7 @@ public class Main {
                         default:
                             System.out.println("\nOpção inválida.\n");
                     }
-                } while (conta == null && opAcesso != 0);
+                } while (conta == null);
             } else {
                 // Menu Principal
                 int opPrincipal;
@@ -111,8 +115,8 @@ public class Main {
                     System.out.println("|  2  | Visualizar saldo Conta                |");
                     System.out.println("|  3  | Sacar                                 |");
                     System.out.println("|  4  | Criar carteira de investimento        |");
-                    System.out.println("| 100 | Teste Bancos                          |");
-                    System.out.println("|  0  | Sair                                  |");
+                    System.out.println("| 100 | Teste do Banco                        |");
+
 
                     List<Carteira> carteirasInvestidor = conta.getCarteiras();
                     if (!carteirasInvestidor.isEmpty()) {
@@ -135,6 +139,7 @@ public class Main {
                         System.out.println("| 15  | Executar ordem                        |");
                         System.out.println("| 16  | Visualizar ordens                     |");
                     }
+                    System.out.println("|  0  | Sair                                  |");
 
                     System.out.print("Escolha uma opção: ");
                     opPrincipal = sc.nextInt();
@@ -165,7 +170,11 @@ public class Main {
                             System.out.print("Informe o nome da carteira: ");
                             String nomeCarteira = sc.next() + sc.nextLine();
                             try {
-                                Carteira novaCarteira = new Carteira(nomeCarteira, conta);
+                                Carteira novaCarteira = new Carteira(nomeCarteira);
+
+                                carteiraDao.cadastrar(conta.getIdConta(), novaCarteira);
+                                Integer id = carteiraDao.buscarIdCarteiraPorNome(nomeCarteira);
+                                novaCarteira.setIdCarteira(id);
                                 conta.adicionarCarteira(novaCarteira);
                                 System.out.println("Carteira criada com sucesso!");
                             } catch (Exception e) {
@@ -174,14 +183,22 @@ public class Main {
                             break;
 
                         case 100:
+                            SairMenuDao = false;
                             while(!SairMenuDao){
                                 int opDao;
                                 System.out.println(conta.getIdConta());
-                                System.out.println("Menu DAO");
-                                System.out.println("1 - Mudar nome de usuario");
-                                System.out.println("2 - Deletar conta");
-                                System.out.println("3 - Lista usuarios (administrativo)");
-                                System.out.println("4 - Sair");
+                                System.out.println("---------------------------------------");
+                                System.out.println("|           TESTE DO BANCO            |");
+                                System.out.println("---------------------------------------");
+                                System.out.println("|              CONTADAO                |");
+                                System.out.println("|  1  | Mudar nome de usuario          |");
+                                System.out.println("|  2  | Lista usuarios                 |");
+                                System.out.println("|  3  | Deletar conta                  |");
+                                System.out.println("|                                      |");
+                                System.out.println("|             CARTEIRADAO              |");
+                                System.out.println("|  4  | Mudar nome da carteira         |");
+                                System.out.println("|  0  | Sair                           |");
+
 
                                 opDao =  sc.nextInt();
 
@@ -198,7 +215,7 @@ public class Main {
                                         }
 
                                         try {
-                                            dao.atualizarNomeInvestidor(conta.getIdConta(), novoNome);
+                                            contadao.atualizarNomeInvestidor(conta.getIdConta(), novoNome);
                                             conta.setNomeInvestidor(novoNome);
                                             System.out.println("Nome atualizado com sucesso!");
                                         } catch (SQLException e) {
@@ -207,6 +224,13 @@ public class Main {
                                         break;
 
                                     case 2:
+                                        List<Conta> contas = contadao.listar();
+                                        for (Conta user : contas) {
+                                            System.out.println("nome: " + user.getNomeInvestidor() + ", " + "Email: " + user.getEmailInvestidor() + ", " + "senha: " + user.getSenhaInvestidor() + ", " + "saldo: " + "R$" + user.getSaldo() + ", " + "carteiras: " + user.getCarteiras().size() + ", " + "movimentacoes: " + user.getMovimentacoes().size());
+                                        }
+                                        break;
+
+                                    case 3:
                                         System.out.print("Tem certeza que deseja excluir sua conta? (S/N): ");
                                         sc.nextLine();
                                         String confirmacao = sc.nextLine().trim().toUpperCase();
@@ -217,8 +241,9 @@ public class Main {
                                         }
 
                                         try {
-                                            dao.deletarConta(conta.getIdConta());
+                                            contadao.deletarConta(conta.getIdConta());
                                             System.out.println("Conta deletada com sucesso! Retornando ao menu de login...");
+                                            SairMenuDao = true;
                                             conta = null;
                                             opPrincipal = 0;
                                             continue;
@@ -227,11 +252,25 @@ public class Main {
                                         }
                                         break;
 
-                                    case 3:
-                                        List<Conta> contas = dao.listar();
-                                        for (Conta user : contas) {
-                                            System.out.println("nome: " + user.getNomeInvestidor() + ", " + "Email: " + user.getEmailInvestidor() + ", " + "senha: " + user.getSenhaInvestidor() + ", " + "saldo: " + "R$" + user.getSaldo() + ", " + "carteiras: " + user.getCarteiras().size() + ", " + "movimentacoes: " + user.getMovimentacoes().size());
+                                    case 4:
+
+                                        if (carteirasInvestidor.isEmpty()) {
+                                            System.out.println("Opção inválida! Cadastre uma carteira primeiro.");
+                                            break;
+                                        }else{
+                                            System.out.println("Cateiras atuais");
+                                            for (Carteira carteira : carteirasInvestidor) {
+                                                System.out.println("Nome: " + carteira.getNome() + ", Saldo: R$" + carteira.getSaldo());
+                                            }
+                                            System.out.println("Digite o nome da carteira que deseja alterar: ");
+                                            sc.nextLine();
+                                            String nomeAtualCarteira = sc.nextLine();
+                                            System.out.println("Digite o novo nome da carteira: ");
+                                            String novoNomeCarteira = sc.nextLine();
+                                            carteiraDao.atualizarNome(nomeAtualCarteira, novoNomeCarteira);
+
                                         }
+
                                         break;
 
                                     case 0:
@@ -239,6 +278,7 @@ public class Main {
                                         SairMenuDao = true;
                                 }
                             }
+                            break;
 
                         case 0:
                             System.out.println("Saindo da conta...");
@@ -255,7 +295,7 @@ public class Main {
                                 case 5:
                                     System.out.println("Carteiras disponíveis:");
                                     for (Carteira carteira : carteirasInvestidor) {
-                                        System.out.println("Nome: " + carteira.getNome() + ", Saldo: R$" + carteira.getSaldo());
+                                        System.out.println("Id banco: " + carteira.getIdCarteira() + " Nome: " + carteira.getNome() + ", Saldo: R$" + carteira.getSaldo());
                                     }
                                     break;
                                 case 6:

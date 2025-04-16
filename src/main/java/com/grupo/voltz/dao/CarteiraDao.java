@@ -25,14 +25,10 @@ public class CarteiraDao {
         }
     }
 
-    /**
-     * Insere uma nova carteira no banco de dados.
-     * Assume a existência de uma sequence seq_carteira para geração de idCarteira.
-     */
-    public void cadastrar(Conta conta, Carteira carteira) throws SQLException {
-        String sql = "INSERT INTO Carteira (idCarteira, idConta, nome, criptoativos, saldo) VALUES (seq_carteira.nextval, ?, ?, ?, ?)";
+    public void cadastrar(int idconta, Carteira carteira) throws SQLException {
+        String sql = "INSERT INTO Carteira (idConta, nome, criptoativos, saldo) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stm = conexao.prepareStatement(sql)) {
-            stm.setLong(1, conta.getIdConta());
+            stm.setLong(1, idconta);
             stm.setString(2, carteira.getNome());
             stm.setInt(3, carteira.getCriptoativos().size());
             stm.setDouble(4, carteira.getSaldo());
@@ -40,62 +36,32 @@ public class CarteiraDao {
         }
     }
 
-    /**
-     * Busca uma carteira pelo seu identificador.
-     */
-    public Carteira buscarPorId(Long idCarteira) throws SQLException {
-        String sql = "SELECT * FROM Carteira WHERE idCarteira = ?";
-        try (PreparedStatement stm = conexao.prepareStatement(sql)) {
-            stm.setLong(1, idCarteira);
-            try (ResultSet rs = stm.executeQuery()) {
-                if (rs.next()) {
-                    return parseCarteira(rs);
-                }
-            }
-        }
-        return null;
-    }
 
-    /**
-     * Lista todas as carteiras cadastradas.
-     */
-    public List<Carteira> listar() throws SQLException {
-        String sql = "SELECT * FROM Carteira";
-        List<Carteira> lista = new ArrayList<>();
-        try (PreparedStatement stm = conexao.prepareStatement(sql);
-             ResultSet rs = stm.executeQuery()) {
-            while (rs.next()) {
-                lista.add(parseCarteira(rs));
-            }
-        }
-        return lista;
-    }
-
-    /**
-     * Lista todas as carteiras pertencentes a uma conta específica.
-     */
-    public List<Carteira> listarPorConta(Long idConta) throws SQLException {
+    public void recuperarCarteiras(Conta conta) throws SQLException {
         String sql = "SELECT * FROM Carteira WHERE idConta = ?";
-        List<Carteira> lista = new ArrayList<>();
+
         try (PreparedStatement stm = conexao.prepareStatement(sql)) {
-            stm.setLong(1, idConta);
+            stm.setInt(1, conta.getIdConta());
             try (ResultSet rs = stm.executeQuery()) {
                 while (rs.next()) {
-                    lista.add(parseCarteira(rs));
+                    Carteira carteira = parseCarteira(rs);
+                    System.out.println(carteira.getNome());
+                    conta.adicionarCarteira(carteira); // Adiciona a carteira à conta
                 }
             }
         }
-        return lista;
+
     }
+
 
     /**
      * Atualiza o nome de uma carteira.
      */
-    public void atualizarNome(Long idCarteira, String novoNome) throws SQLException {
-        String sql = "UPDATE Carteira SET nome = ? WHERE idCarteira = ?";
+    public void atualizarNome(String nomeAtualCarteira, String novoNome) throws SQLException {
+        String sql = "UPDATE Carteira SET nome = ? WHERE nome = ?";
         try (PreparedStatement stm = conexao.prepareStatement(sql)) {
             stm.setString(1, novoNome);
-            stm.setLong(2, idCarteira);
+            stm.setString(2, nomeAtualCarteira);
             stm.executeUpdate();
         }
     }
@@ -123,21 +89,30 @@ public class CarteiraDao {
         }
     }
 
-    /**
-     * Converte um registro de ResultSet em um objeto Carteira.
-     * Observação: popula apenas nome, saldo e conta mínima.
-     */
+    public Integer buscarIdCarteiraPorNome(String nomeCarteira) throws SQLException {
+        String sql = "SELECT idCarteira FROM Carteira WHERE nome = ?";
+
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setString(1, nomeCarteira);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("idCarteira");
+                }
+            }
+        }
+
+        return null; // retorna null se não encontrar nenhuma carteira com esse nome
+    }
+
     private Carteira parseCarteira(ResultSet rs) throws SQLException {
-        Integer idConta = rs.getInt("idConta");
+        int idCarteira = rs.getInt("idCarteira");
         String nome = rs.getString("nome");
-        int criptoCount = rs.getInt("criptoativos");
         double saldo = rs.getDouble("saldo");
 
-        // Cria objeto Conta mínimo apenas com o id
-        Conta conta = new Conta(idConta, null, null, null, 0.0, new ArrayList<>(), 0);
-        Carteira carteira = new Carteira(nome, conta);
+        Carteira carteira = new Carteira(idCarteira, nome);
         carteira.setSaldo(saldo);
-        // Opcional: preencher lista de criptoativos com placeholders, se necessário
+
         return carteira;
     }
 }
