@@ -34,7 +34,6 @@ public class TransacaoDao {
         // Converte o enum para String
         stm.setString(1, transacao.getTipo().name());
         // Utiliza o id do criptoativo associado (é esperado que Criptoativo tenha o método getId())
-        stm.setInt(2, transacao.getCriptoativo().getId());
         stm.setDouble(3, transacao.getQuantidade());
         stm.setDouble(4, transacao.getValor());
         // Converte LocalDateTime para Timestamp
