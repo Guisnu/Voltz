@@ -198,6 +198,8 @@ public class Main {
                                 System.out.println("|                                      |");
                                 System.out.println("|             CARTEIRADAO              |");
                                 System.out.println("|  4  | Mudar nome da carteira         |");
+                                System.out.println("|              CRIPTODAO               |");
+                                System.out.println("|  5  | Mudar nome da carteira         |");
                                 System.out.println("|  0  | Sair                           |");
 
 
@@ -259,7 +261,7 @@ public class Main {
                                             System.out.println("Opção inválida! Cadastre uma carteira primeiro.");
                                             break;
                                         }else{
-                                            System.out.println("Cateiras atuais");
+                                            System.out.println("Carteiras atuais");
                                             for (Carteira carteira : carteirasInvestidor) {
                                                 System.out.println("Nome: " + carteira.getNome() + ", Saldo: R$" + carteira.getSaldo());
                                             }
