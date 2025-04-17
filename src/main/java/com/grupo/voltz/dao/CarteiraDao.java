@@ -8,8 +8,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CarteiraDao {
 
@@ -69,11 +67,11 @@ public class CarteiraDao {
     /**
      * Atualiza o saldo de uma carteira.
      */
-    public void atualizarSaldo(Long idCarteira, double novoSaldo) throws SQLException {
-        String sql = "UPDATE Carteira SET saldo = ? WHERE idCarteira = ?";
+    public void atualizarSaldo(Integer idCarteira, double novoSaldo) throws SQLException {
+        String sql = "UPDATE Carteira SET saldo = + ? WHERE idCarteira = ?";
         try (PreparedStatement stm = conexao.prepareStatement(sql)) {
             stm.setDouble(1, novoSaldo);
-            stm.setLong(2, idCarteira);
+            stm.setInt(2, idCarteira);
             stm.executeUpdate();
         }
     }
@@ -81,10 +79,10 @@ public class CarteiraDao {
     /**
      * Remove uma carteira do banco de dados.
      */
-    public void deletar(Long idCarteira) throws SQLException {
+    public void deletar(Integer idCarteira) throws SQLException {
         String sql = "DELETE FROM Carteira WHERE idCarteira = ?";
         try (PreparedStatement stm = conexao.prepareStatement(sql)) {
-            stm.setLong(1, idCarteira);
+            stm.setInt(1, idCarteira);
             stm.executeUpdate();
         }
     }

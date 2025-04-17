@@ -20,7 +20,7 @@ public class Carteira {
         this.idCarteira = idCarteira;
         this.nome = nome;
     }
-    public Carteira( String nome) {
+    public Carteira(String nome) {
         this.nome = nome;
     }
 

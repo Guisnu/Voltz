@@ -1,18 +1,14 @@
 package com.grupo.voltz.dao;
 
 import com.grupo.voltz.model.Transacao;
-import com.grupo.voltz.model.Criptoativo;
-import com.grupo.voltz.enums.TipoTransacaoEnum;
 import com.grupo.voltz.services.ConnectionService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.ResultSet;
+
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class TransacaoDao {
 
@@ -38,7 +34,6 @@ public class TransacaoDao {
         // Converte o enum para String
         stm.setString(1, transacao.getTipo().name());
         // Utiliza o id do criptoativo associado (é esperado que Criptoativo tenha o método getId())
-        stm.setInt(2, transacao.getCriptoativo().getId());
         stm.setDouble(3, transacao.getQuantidade());
         stm.setDouble(4, transacao.getValor());
         // Converte LocalDateTime para Timestamp

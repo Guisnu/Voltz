@@ -122,22 +122,23 @@ public class Main {
                     if (!carteirasInvestidor.isEmpty()) {
                         System.out.println("|  5  | Visualizar carteiras de investimento  |");
                         System.out.println("|  6  | Transferir valor na carteira          |");
+                        System.out.println("|  7  | Deletar carteira                      |");
                         System.out.println("----------------------------------------------");
                         System.out.println("|                CRIPTOATIVOS                 |");
                         System.out.println("----------------------------------------------");
-                        System.out.println("|  7  | Comprar criptoativos                  |");
-                        System.out.println("|  8  | Vender criptoativos                   |");
-                        System.out.println("|  9  | Visualizar criptoativos nas carteiras |");
-                        System.out.println("| 10  | Visualizar transações                 |");
+                        System.out.println("|  8  | Comprar criptoativos                  |");
+                        System.out.println("|  9  | Vender criptoativos                   |");
+                        System.out.println("| 10  | Visualizar criptoativos nas carteiras |");
+                        System.out.println("| 11  | Visualizar transações                 |");
                         System.out.println("----------------------------------------------");
                         System.out.println("|                   ORDENS                    |");
                         System.out.println("----------------------------------------------");
-                        System.out.println("| 11  | Cadastrar ordem de compra             |");
-                        System.out.println("| 12  | Cadastrar ordem de venda              |");
-                        System.out.println("| 13  | Cancelar ordem                        |");
-                        System.out.println("| 14  | Enviar ordem                          |");
-                        System.out.println("| 15  | Executar ordem                        |");
-                        System.out.println("| 16  | Visualizar ordens                     |");
+                        System.out.println("| 12  | Cadastrar ordem de compra             |");
+                        System.out.println("| 13  | Cadastrar ordem de venda              |");
+                        System.out.println("| 14  | Cancelar ordem                        |");
+                        System.out.println("| 15  | Enviar ordem                          |");
+                        System.out.println("| 16  | Executar ordem                        |");
+                        System.out.println("| 17  | Visualizar ordens                     |");
                     }
                     System.out.println("|  0  | Sair                                  |");
 
@@ -197,6 +198,8 @@ public class Main {
                                 System.out.println("|                                      |");
                                 System.out.println("|             CARTEIRADAO              |");
                                 System.out.println("|  4  | Mudar nome da carteira         |");
+                                System.out.println("|              CRIPTODAO               |");
+                                System.out.println("|  5  | Mudar nome da carteira         |");
                                 System.out.println("|  0  | Sair                           |");
 
 
@@ -258,7 +261,7 @@ public class Main {
                                             System.out.println("Opção inválida! Cadastre uma carteira primeiro.");
                                             break;
                                         }else{
-                                            System.out.println("Cateiras atuais");
+                                            System.out.println("Carteiras atuais");
                                             for (Carteira carteira : carteirasInvestidor) {
                                                 System.out.println("Nome: " + carteira.getNome() + ", Saldo: R$" + carteira.getSaldo());
                                             }
@@ -298,6 +301,7 @@ public class Main {
                                         System.out.println("Id banco: " + carteira.getIdCarteira() + " Nome: " + carteira.getNome() + ", Saldo: R$" + carteira.getSaldo());
                                     }
                                     break;
+
                                 case 6:
                                     System.out.println("----------------------------------------------");
                                     System.out.println("|         TRANSFERIR VALOR NA CARTEIRA       |");
@@ -319,7 +323,32 @@ public class Main {
                                         System.out.println(e.getMessage());
                                     }
                                     break;
+
                                 case 7:
+                                    Carteira carteiraDel = escolherCarteira(carteirasInvestidor, sc);
+                                    if (carteiraDel == null) {
+                                        break;
+                                    }
+
+                                    System.out.print("Tem certeza que deseja excluir sua carteira? (S/N): ");
+                                    sc.nextLine();
+                                    String confirmacao = sc.nextLine().trim().toUpperCase();
+
+                                    if (!confirmacao.equals("S")) {
+                                        System.out.println("Operação cancelada.");
+                                        break;
+                                    }
+
+                                    try {
+                                        carteiraDao.deletar(carteiraDel.getIdCarteira());
+                                        conta.removerCarteira(carteiraDel);
+                                        System.out.println("Carteira deletada com sucesso!");
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao deletar carteira: " + e.getMessage());
+                                    }
+                                    break;
+
+                                case 8:
                                     System.out.println("----------------------------------------------");
                                     System.out.println("|             COMPRAR CRIPTOATIVO            |");
                                     System.out.println("----------------------------------------------");
@@ -346,6 +375,7 @@ public class Main {
 
                                     System.out.println("=== ESCOLHER CARTEIRA ===");
                                     Carteira carteiraECompra = escolherCarteira(carteirasInvestidor, sc);
+                                    Integer id = carteiraDao.buscarIdCarteiraPorNome(carteiraECompra.getNome());
 
                                     if (carteiraECompra == null) {
                                         break;
@@ -357,6 +387,8 @@ public class Main {
                                     if (quantidade < 0) {
                                         System.out.println("O valor de compra deve ser maior que Zero!");
                                         break;
+                                    }else{
+                                        carteiraDao.atualizarSaldo(id,quantidade);
                                     }
 
                                     try {
@@ -366,7 +398,7 @@ public class Main {
                                         System.out.print(e.getMessage());
                                     }
                                     break;
-                                case 8:
+                                case 9:
                                     System.out.println("----------------------------------------------");
                                     System.out.println("|              VENDER CRIPTOATIVO            |");
                                     System.out.println("----------------------------------------------");
@@ -393,7 +425,7 @@ public class Main {
                                         System.out.print(e.getMessage());
                                     }
                                     break;
-                                case 9:
+                                case 10:
                                     System.out.println("----------------------------------------------");
                                     System.out.println("|    VISUALIZAR CRIPTOATIVOS DA CARTEIRA     |");
                                     System.out.println("----------------------------------------------");
@@ -422,7 +454,7 @@ public class Main {
                                         );
                                     }
                                     break;
-                                case 10:
+                                case 11:
                                     System.out.println("----------------------------------------------");
                                     System.out.println("|            VISUALIZAR TRANSAÇÕES           |");
                                     System.out.println("----------------------------------------------");
@@ -448,7 +480,7 @@ public class Main {
 
                                     LogService.registrarTransacoes(transacoesCarteira, carteiraEVTransacoes);
                                     break;
-                                case 11:
+                                case 12:
                                     System.out.println("----------------------------------------------");
                                     System.out.println("|          CADASTRAR ORDEM DE COMPRA         |");
                                     System.out.println("----------------------------------------------");
@@ -476,7 +508,7 @@ public class Main {
                                         System.out.print(e.getMessage());
                                     }
                                     break;
-                                case 12:
+                                case 13:
                                     System.out.println("----------------------------------------------");
                                     System.out.println("|           CADASTRAR ORDEM DE VENDA         |");
                                     System.out.println("----------------------------------------------");
@@ -502,7 +534,7 @@ public class Main {
                                         System.out.println(e.getMessage());
                                     }
                                     break;
-                                case 13:
+                                case 14:
                                     System.out.println("----------------------------------------------");
                                     System.out.println("|                CANCELAR ORDEM              |");
                                     System.out.println("----------------------------------------------");
@@ -526,7 +558,7 @@ public class Main {
                                         System.out.println(e.getMessage());
                                     }
                                     break;
-                                case 14:
+                                case 15:
                                     System.out.println("----------------------------------------------");
                                     System.out.println("|                 ENVIAR ORDEM               |");
                                     System.out.println("----------------------------------------------");
@@ -550,7 +582,7 @@ public class Main {
                                         System.out.println(e.getMessage());
                                     }
                                     break;
-                                case 15:
+                                case 16:
                                     System.out.println("----------------------------------------------");
                                     System.out.println("|               EXECUTAR ORDEM               |");
                                     System.out.println("----------------------------------------------");
@@ -574,7 +606,7 @@ public class Main {
                                         System.out.println(e.getMessage());
                                     }
                                     break;
-                                case 16:
+                                case 17:
                                     System.out.println("----------------------------------------------");
                                     System.out.println("|             VISUALIZAR ORDEM               |");
                                     System.out.println("----------------------------------------------");
