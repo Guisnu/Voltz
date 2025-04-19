@@ -13,14 +13,14 @@ public class Transacao {
     private double valor;
     private LocalDateTime data = LocalDateTime.now();
 
-    public Transacao(TipoTransacaoEnum tipo, Criptoativo criptoativo, double valor) {
+    public Transacao(TipoTransacaoEnum tipo, Criptoativo criptoativo, Double quantidade, double valor) {
         if (valor < 0) {
             throw new IllegalArgumentException("O valor deve ser maior que Zero!");
         }
         this.tipo = tipo;
         this.criptoativo = criptoativo;
         this.valor = valor;
-        setQuantidade(valor);
+        this.quantidade = quantidade;
     }
 
     public TipoTransacaoEnum getTipo() {

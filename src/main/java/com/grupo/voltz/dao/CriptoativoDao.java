@@ -24,13 +24,24 @@ public class CriptoativoDao {
     /**
      * Insere um novo Criptoativo na base
      */
-    public void cadastrar(Criptoativo cripto) throws SQLException {
+    public void fetch(Criptoativo cripto) throws SQLException {
         String sql = "INSERT INTO Criptoativo (nome, simbolo, precoAtual) " +
                 "VALUES (?, ?, ?)";
         try (PreparedStatement stm = conexao.prepareStatement(sql)) {
             stm.setString(1, cripto.getNome());
             stm.setString(2, cripto.getSimbolo());
             stm.setDouble(3, cripto.getPrecoAtual());
+            stm.executeUpdate();
+        }
+    }
+
+    public void cadastrar(String nome, String simbolo, Double preco ) throws SQLException {
+        String sql = "INSERT INTO Criptoativo (nome, simbolo, precoAtual) " +
+                "VALUES (?, ?, ?)";
+        try (PreparedStatement stm = conexao.prepareStatement(sql)) {
+            stm.setString(1, nome);
+            stm.setString(2, simbolo);
+            stm.setDouble(3, preco);
             stm.executeUpdate();
         }
     }
@@ -72,12 +83,12 @@ public class CriptoativoDao {
     }
 
     private Criptoativo parseCriptoativo(ResultSet rs) throws SQLException {
-        int id = rs.getInt("idCriptoativo");
+        Integer id = rs.getInt("idCriptoativo");
         String nome = rs.getString("nome");
         String simbolo = rs.getString("simbolo");
         double precoAtual = rs.getDouble("precoAtual");
 
-        Criptoativo cripto = new Criptoativo(nome, simbolo, precoAtual);
+        Criptoativo cripto = new Criptoativo(id,nome, simbolo, precoAtual);
         return cripto;
     }
 

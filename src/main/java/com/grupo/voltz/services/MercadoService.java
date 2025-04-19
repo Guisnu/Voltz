@@ -34,7 +34,7 @@ public class MercadoService extends BaseService {
             for (Criptoativo c : criptoativos) {
                 // Verifica se já existe pelo símbolo antes de cadastrar
                 if (!criptoDao.existePorSimbolo(c.getSimbolo())) {
-                    criptoDao.cadastrar(c);
+                    criptoDao.fetch(c);
                 }
             }
 

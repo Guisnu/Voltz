@@ -1,6 +1,5 @@
 package com.grupo.voltz.model;
 
-import com.grupo.voltz.enums.TipoMovimentacaoEnum;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,10 +11,9 @@ public class Conta {
     private String emailInvestidor;
     private String senhaInvestidor;
     private List<Carteira> carteiras = new ArrayList<>();
-    private List<MovimentacaoConta> movimentacoes = new ArrayList<>();
     private List<Transacao> transacoes = new ArrayList<>();
 
-    public Conta(Integer id, String nomeInvestidor, String emailInvestidor, String senhaInvestidor, Double saldo, List<Carteira> carteiras, int movimentacoes) {
+    public Conta(Integer id, String nomeInvestidor, String emailInvestidor, String senhaInvestidor, Double saldo, List<Carteira> carteiras) {
         this.idConta = id;
         this.nomeInvestidor = nomeInvestidor;
         this.emailInvestidor = emailInvestidor;
@@ -23,7 +21,6 @@ public class Conta {
         this.saldo = saldo;
 
         this.carteiras = new ArrayList<>(carteiras);
-        this.movimentacoes = new ArrayList<>(movimentacoes);
     }
 
     public Conta(String nomeInvestidor, String emailInvestidor, String senhaInvestidor){
@@ -73,24 +70,11 @@ public class Conta {
         carteiras.remove(carteira);
     }
 
-    public void adicionarMovimentacao(MovimentacaoConta movimentacaoConta) {
-        movimentacoes.add(movimentacaoConta);
-    }
-
-    public List<MovimentacaoConta> getMovimentacoes() {
-        for (MovimentacaoConta movimentacao : movimentacoes) {
-            System.out.println("Tipo: " + movimentacao.getTipo() + ", Valor: " + movimentacao.getValor());
-        }
-
-        return movimentacoes;
-    }
-
     public boolean depositar(double valor) {
         if (valor < 0) {
             System.out.println("O valor deve ser maior que Zero!");
             return false;
         }
-        adicionarMovimentacao(new MovimentacaoConta(this, TipoMovimentacaoEnum.DEPOSITO, valor));
 
         this.saldo += valor;
         return true;
