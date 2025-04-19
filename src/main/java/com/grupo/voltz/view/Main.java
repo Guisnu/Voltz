@@ -1,8 +1,6 @@
 package com.grupo.voltz.view;
 
-import com.grupo.voltz.dao.CarteiraDao;
-import com.grupo.voltz.dao.ContaDao;
-import com.grupo.voltz.enums.TipoOrdemEnum;
+import com.grupo.voltz.dao.*;
 import com.grupo.voltz.enums.TipoTransacaoEnum;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
@@ -18,12 +16,18 @@ public class Main {
         boolean SairMenuDao = false;
         ContaDao contadao = null;
         CarteiraDao carteiraDao = null;
+        CriptoativoDao criptoativoDao = null;
+        TransacaoDao transacaoDao = null;
+        CarteiraCriptoativoDao carteiraCriptoDao = null;
         Scanner sc = new Scanner(System.in);
         Conta conta = null;
 
         try {
             contadao = new ContaDao();
             carteiraDao = new CarteiraDao();
+            criptoativoDao = new CriptoativoDao();
+            transacaoDao = new TransacaoDao();
+            carteiraCriptoDao = new CarteiraCriptoativoDao();
             System.out.println("--------------------------------------");
             System.out.println("✅ Conexão realizada com sucesso ✅");
             System.out.println("--------------------------------------");
@@ -68,11 +72,20 @@ public class Main {
                                 System.out.println("\nEmail ou senha inválidos. Tente novamente. 🤦\n");
                             } else {
                                 carteiraDao.recuperarCarteiras(conta);
+
+                                for (Carteira carteira : conta.getCarteiras()) {
+                                    List<Criptoativo> criptoativos = carteiraCriptoDao.listarCriptoativosPorCarteira(carteira.getIdCarteira());
+                                    for (Criptoativo c : criptoativos) {
+                                        carteira.adicionarCriptoativo(c);
+                                    }
+                                }
+
                                 if (conta.getNomeInvestidor() == null || conta.getNomeInvestidor().trim().isEmpty()) {
                                     conta.setNomeInvestidor("Investidor");
                                 }
                                 System.out.println("\nLogin realizado com sucesso!\n");
                             }
+
                             break;
 
                         case 2:
@@ -97,7 +110,7 @@ public class Main {
                         case 0:
                             System.out.println("Encerrando o sistema...");
                             sc.close();
-                            System.exit(0); // Encerra o programa
+                            System.exit(0);
                             break;
 
                         default:
@@ -108,6 +121,25 @@ public class Main {
                 // Menu Principal
                 int opPrincipal;
                 do {
+                    List<Carteira> carteirasInvestidor = conta.getCarteiras();
+                    if (!carteirasInvestidor.isEmpty()){
+                        System.out.println("\n--- CRIPTOATIVOS NA SUA CONTA ---");
+
+                        for (Carteira carteira : conta.getCarteiras()) {
+                            System.out.println("Carteira: " + carteira.getNome());
+
+                            if (carteira.getCriptoativos().isEmpty()) {
+                                System.out.println("  Nenhum criptoativo nesta carteira.");
+                            } else {
+                                for (Criptoativo c : carteira.getCriptoativos()) {
+                                    System.out.printf("  - %s (%s): %.6f unidades | Preço atual: R$%.2f%n",
+                                            c.getNome(), c.getSimbolo(), c.getQuantidade(), c.getPrecoAtual());
+                                }
+                            }
+                        }
+                        System.out.println("----------------------------------");
+                    }
+
                     System.out.println("----------------------------------------------");
                     System.out.println("|                MENU PRINCIPAL               |");
                     System.out.println("----------------------------------------------");
@@ -115,13 +147,11 @@ public class Main {
                     System.out.println("|  2  | Visualizar saldo Conta                |");
                     System.out.println("|  3  | Sacar                                 |");
                     System.out.println("|  4  | Criar carteira de investimento        |");
-                    System.out.println("| 100 | Teste do Banco                        |");
 
 
-                    List<Carteira> carteirasInvestidor = conta.getCarteiras();
                     if (!carteirasInvestidor.isEmpty()) {
                         System.out.println("|  5  | Visualizar carteiras de investimento  |");
-                        System.out.println("|  6  | Transferir valor na carteira          |");
+                        System.out.println("|  6  | Transferir valor para carteira        |");
                         System.out.println("|  7  | Deletar carteira                      |");
                         System.out.println("----------------------------------------------");
                         System.out.println("|                CRIPTOATIVOS                 |");
@@ -130,16 +160,8 @@ public class Main {
                         System.out.println("|  9  | Vender criptoativos                   |");
                         System.out.println("| 10  | Visualizar criptoativos nas carteiras |");
                         System.out.println("| 11  | Visualizar transações                 |");
-                        System.out.println("----------------------------------------------");
-                        System.out.println("|                   ORDENS                    |");
-                        System.out.println("----------------------------------------------");
-                        System.out.println("| 12  | Cadastrar ordem de compra             |");
-                        System.out.println("| 13  | Cadastrar ordem de venda              |");
-                        System.out.println("| 14  | Cancelar ordem                        |");
-                        System.out.println("| 15  | Enviar ordem                          |");
-                        System.out.println("| 16  | Executar ordem                        |");
-                        System.out.println("| 17  | Visualizar ordens                     |");
                     }
+                    System.out.println("| 100 | Teste do Banco                        |");
                     System.out.println("|  0  | Sair                                  |");
 
                     System.out.print("Escolha uma opção: ");
@@ -147,10 +169,25 @@ public class Main {
 
                     switch (opPrincipal) {
                         case 1:
-                            System.out.println("Informe a quantidade do depósito: ");
+                            System.out.print("Informe o valor do depósito: ");
                             double deposito = sc.nextDouble();
-                            conta.depositar(deposito);
-                            System.out.println("Valor depositado com sucesso!");
+                            if (deposito <= 0) {
+                                System.out.println("Valor inválido! Deve ser maior que zero.");
+                                break;
+                            }
+
+                            try {
+                                // Atualiza o saldo no objeto
+                                conta.depositar(deposito);
+
+                                // Atualiza o saldo no banco
+                                contadao.atualizarSaldo(conta.getIdConta(), conta.getSaldo());
+
+                                System.out.printf("Depósito de R$%.2f realizado! Saldo atual: R$%.2f%n",
+                                        deposito, conta.getSaldo());
+                            } catch (SQLException e) {
+                                System.out.println("Erro ao depositar: " + e.getMessage());
+                            }
                             break;
 
                         case 2:
@@ -158,12 +195,25 @@ public class Main {
                             break;
 
                         case 3:
-                            System.out.println("Informe a quantidade do saque: ");
+                            System.out.print("Informe o valor do saque: ");
                             double saque = sc.nextDouble();
-                            if (conta.sacar(saque)) {
-                                System.out.println("Valor sacado com sucesso!");
-                            } else {
-                                System.out.println("Saldo insuficiente!");
+                            if (saque <= 0) {
+                                System.out.println("Valor inválido! Deve ser maior que zero.");
+                                break;
+                            }
+
+                            try {
+                                // Tenta sacar (verifica saldo suficiente)
+                                if (conta.sacar(saque)) {
+                                    // Atualiza o saldo no banco
+                                    contadao.atualizarSaldo(conta.getIdConta(), conta.getSaldo());
+                                    System.out.printf("Saque de R$%.2f realizado! Saldo atual: R$%.2f%n",
+                                            saque, conta.getSaldo());
+                                } else {
+                                    System.out.println("Saldo insuficiente!");
+                                }
+                            } catch (SQLException e) {
+                                System.out.println("Erro ao sacar: " + e.getMessage());
                             }
                             break;
 
@@ -173,10 +223,20 @@ public class Main {
                             try {
                                 Carteira novaCarteira = new Carteira(nomeCarteira);
 
+                                // Cadastra no banco
                                 carteiraDao.cadastrar(conta.getIdConta(), novaCarteira);
                                 Integer id = carteiraDao.buscarIdCarteiraPorNome(nomeCarteira);
                                 novaCarteira.setIdCarteira(id);
+
+                                // Adiciona à conta (em memória)
                                 conta.adicionarCarteira(novaCarteira);
+
+                                // Atualiza a quantidade no banco
+                                contadao.atualizarQuantidadeCarteiras(
+                                        conta.getIdConta(),
+                                        conta.getCarteiras().size()
+                                );
+
                                 System.out.println("Carteira criada com sucesso!");
                             } catch (Exception e) {
                                 System.out.println("Erro ao criar carteira: " + e.getMessage());
@@ -199,9 +259,8 @@ public class Main {
                                 System.out.println("|             CARTEIRADAO              |");
                                 System.out.println("|  4  | Mudar nome da carteira         |");
                                 System.out.println("|              CRIPTODAO               |");
-                                System.out.println("|  5  | Mudar nome da carteira         |");
+                                System.out.println("|  5  | Adicionar cripto               |");
                                 System.out.println("|  0  | Sair                           |");
-
 
                                 opDao =  sc.nextInt();
 
@@ -229,7 +288,7 @@ public class Main {
                                     case 2:
                                         List<Conta> contas = contadao.listar();
                                         for (Conta user : contas) {
-                                            System.out.println("nome: " + user.getNomeInvestidor() + ", " + "Email: " + user.getEmailInvestidor() + ", " + "senha: " + user.getSenhaInvestidor() + ", " + "saldo: " + "R$" + user.getSaldo() + ", " + "carteiras: " + user.getCarteiras().size() + ", " + "movimentacoes: " + user.getMovimentacoes().size());
+                                            System.out.println("nome: " + user.getNomeInvestidor() + ", " + "Email: " + user.getEmailInvestidor() + ", " + "senha: " + user.getSenhaInvestidor() + ", " + "saldo: " + "R$" + user.getSaldo() + ", " + "carteiras: " + user.getCarteiras().size());
                                         }
                                         break;
 
@@ -276,6 +335,17 @@ public class Main {
 
                                         break;
 
+                                    case 5:
+                                        sc.nextLine();
+                                        System.out.println("Digite o nome do criptoativo: ");
+                                        String nomecripto =  sc.nextLine();
+                                        System.out.println("Digite o simbolo do criptoativo: ");
+                                        String simbolocripto =  sc.nextLine();
+                                        System.out.println("Digite o valor do criptoativo: ");
+                                        Double valorcripto =  sc.nextDouble();
+                                        criptoativoDao.cadastrar(nomecripto, simbolocripto, valorcripto);
+                                        break;
+
                                     case 0:
                                         System.out.println("Voltando para o menu...");
                                         SairMenuDao = true;
@@ -317,18 +387,21 @@ public class Main {
                                     double valorDeposito = sc.nextDouble();
 
                                     try {
-                                        carteiraEscolhida.depositar(valorDeposito);
+                                        carteiraEscolhida.setSaldo(carteiraEscolhida.getSaldo() + valorDeposito);
+
+                                        int idCarteira = carteiraEscolhida.getIdCarteira();
+                                        carteiraDao.atualizarSaldo(idCarteira, valorDeposito);
+
                                         System.out.println("Valor depositado com sucesso na carteira " + carteiraEscolhida.getNome() + "!");
+
                                     } catch (Exception e) {
-                                        System.out.println(e.getMessage());
+                                        System.out.println("Erro ao depositar: " + e.getMessage());
                                     }
                                     break;
 
                                 case 7:
                                     Carteira carteiraDel = escolherCarteira(carteirasInvestidor, sc);
-                                    if (carteiraDel == null) {
-                                        break;
-                                    }
+                                    if (carteiraDel == null) break;
 
                                     System.out.print("Tem certeza que deseja excluir sua carteira? (S/N): ");
                                     sc.nextLine();
@@ -340,8 +413,18 @@ public class Main {
                                     }
 
                                     try {
+                                        // Remove do banco
                                         carteiraDao.deletar(carteiraDel.getIdCarteira());
+
+                                        // Remove da conta (em memória)
                                         conta.removerCarteira(carteiraDel);
+
+                                        // Atualiza a quantidade no banco
+                                        contadao.atualizarQuantidadeCarteiras(
+                                                conta.getIdConta(),
+                                                conta.getCarteiras().size()
+                                        );
+
                                         System.out.println("Carteira deletada com sucesso!");
                                     } catch (SQLException e) {
                                         System.out.println("Erro ao deletar carteira: " + e.getMessage());
@@ -353,76 +436,123 @@ public class Main {
                                     System.out.println("|             COMPRAR CRIPTOATIVO            |");
                                     System.out.println("----------------------------------------------");
 
-                                    for (int i = 0; i < criptoativosMercado.size(); i++) {
-                                        Criptoativo criptoativo = criptoativosMercado.get(i);
-                                        System.out.printf(
-                                                "%d- Símbolo: %s | Nome: %s | Preço: R$%.2f%n",
-                                                i + 1,
-                                                criptoativo.getSimbolo(),
-                                                criptoativo.getNome(),
-                                                criptoativo.getPrecoAtual()
-                                        );
+                                    List<Criptoativo> criptoativosBanco = criptoativoDao.listarTodos();
+                                    for (int i = 0; i < criptoativosBanco.size(); i++) {
+                                        Criptoativo c = criptoativosBanco.get(i);
+                                        System.out.printf("%d- Símbolo: %s | Nome: %s | Preço: R$%.2f%n",
+                                                i + 1, c.getSimbolo(), c.getNome(), c.getPrecoAtual());
                                     }
 
                                     System.out.print("Escolha um criptoativo para comprar (número): ");
                                     int escolhaCripto = sc.nextInt();
-                                    if (escolhaCripto < 1 || escolhaCripto > criptoativosMercado.size()) {
+                                    if (escolhaCripto < 1 || escolhaCripto > criptoativosBanco.size()) {
                                         System.out.println("Opção inválida!");
                                         break;
                                     }
 
-                                    Criptoativo criptoativoEscolhido = criptoativosMercado.get(escolhaCripto - 1);
+                                    Criptoativo criptoativoEscolhido = criptoativosBanco.get(escolhaCripto - 1);
 
-                                    System.out.println("=== ESCOLHER CARTEIRA ===");
                                     Carteira carteiraECompra = escolherCarteira(carteirasInvestidor, sc);
-                                    Integer id = carteiraDao.buscarIdCarteiraPorNome(carteiraECompra.getNome());
+                                    if (carteiraECompra == null) break;
 
-                                    if (carteiraECompra == null) {
+                                    System.out.print("Informe o valor a ser comprado (R$): ");
+                                    double valorCompra = sc.nextDouble();
+                                    if (valorCompra <= 0) {
+                                        System.out.println("Valor inválido! Deve ser maior que zero.");
                                         break;
                                     }
 
-                                    System.out.print("Informe o valor a ser comprado: ");
-                                    double quantidade = sc.nextDouble();
-
-                                    if (quantidade < 0) {
-                                        System.out.println("O valor de compra deve ser maior que Zero!");
+                                    if (valorCompra > carteiraECompra.getSaldo()) {
+                                        System.out.println("Saldo insuficiente na carteira!");
                                         break;
-                                    }else{
-                                        carteiraDao.atualizarSaldo(id,quantidade);
                                     }
+
+                                    double quantidadeComprada = valorCompra / criptoativoEscolhido.getPrecoAtual();
+                                    System.out.printf("[DEBUG] Quantidade calculada: %.8f %s%n",
+                                            quantidadeComprada, criptoativoEscolhido.getSimbolo());
 
                                     try {
-                                        Transacao compraBTC = new Transacao(TipoTransacaoEnum.COMPRA, criptoativoEscolhido, quantidade);
-                                        compraBTC.executarTransacao(carteiraECompra);
-                                    } catch (Exception e) {
-                                        System.out.print(e.getMessage());
+                                        carteiraECompra.setSaldo(carteiraECompra.getSaldo() - valorCompra);
+                                        carteiraDao.atualizarSaldo(carteiraECompra.getIdCarteira(), -valorCompra);
+
+                                        carteiraCriptoDao.registrarCompra(
+                                                carteiraECompra.getIdCarteira(),
+                                                criptoativoEscolhido.getIdCriptoativo(),
+                                                quantidadeComprada
+                                        );
+
+                                        boolean criptoJaExiste = false;
+                                        for (Criptoativo c : carteiraECompra.getCriptoativos()) {
+                                            if (c.getIdCriptoativo() == criptoativoEscolhido.getIdCriptoativo()) {
+                                                c.setQuantidade(c.getQuantidade() + quantidadeComprada);
+                                                criptoJaExiste = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!criptoJaExiste) {
+                                            Criptoativo novoCripto = new Criptoativo(
+                                                    criptoativoEscolhido.getIdCriptoativo(),
+                                                    criptoativoEscolhido.getNome(),
+                                                    criptoativoEscolhido.getSimbolo(),
+                                                    criptoativoEscolhido.getPrecoAtual()
+                                            );
+                                            novoCripto.setQuantidade(quantidadeComprada);
+                                            carteiraECompra.adicionarCriptoativo(novoCripto);
+                                        }
+
+                                        Transacao compra = new Transacao(TipoTransacaoEnum.COMPRA, criptoativoEscolhido, quantidadeComprada, valorCompra);
+                                        transacaoDao.cadastrar(compra, conta.getIdConta());
+
+                                        System.out.println("Compra realizada com sucesso!");
+
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao comprar: " + e.getMessage());
                                     }
                                     break;
+
                                 case 9:
                                     System.out.println("----------------------------------------------");
                                     System.out.println("|              VENDER CRIPTOATIVO            |");
                                     System.out.println("----------------------------------------------");
 
-                                    Carteira carteiraEVendaCriptoativo = escolherCarteira(carteirasInvestidor, sc);
+                                    Carteira carteiraEVenda = escolherCarteira(carteirasInvestidor, sc);
+                                    if (carteiraEVenda == null) break;
 
-                                    if (carteiraEVendaCriptoativo == null) {
+                                    Criptoativo criptoVenda = escolherCriptoativoCarteira(carteiraEVenda, sc);
+                                    if (criptoVenda == null) break;
+
+                                    System.out.printf("Informe a quantidade de %s a vender (Disponível: %.8f): ",
+                                            criptoVenda.getSimbolo(), criptoVenda.getQuantidade());
+                                    double quantidadeVenda = sc.nextDouble();
+
+
+                                    if (quantidadeVenda <= 0 || quantidadeVenda > criptoVenda.getQuantidade()) {
+                                        System.out.println("Quantidade inválida ou saldo insuficiente!");
                                         break;
                                     }
 
-                                    Criptoativo criptoativoEVenda = escolherCriptoativoCarteira(carteiraEVendaCriptoativo, sc);
-
-                                    if (criptoativoEVenda == null) {
-                                        break;
-                                    }
-
-                                    System.out.print("Informe o valor a ser vendido: ");
-                                    double valorVenda = sc.nextDouble();
+                                    double valorVenda = quantidadeVenda * criptoVenda.getPrecoAtual();
+                                    System.out.printf("Valor da venda: R$%.2f%n", valorVenda);
 
                                     try {
-                                        Transacao compraBTC = new Transacao(TipoTransacaoEnum.VENDA, criptoativoEVenda, valorVenda);
-                                        compraBTC.executarTransacao(carteiraEVendaCriptoativo);
-                                    } catch (Exception e) {
-                                        System.out.print(e.getMessage());
+                                        carteiraCriptoDao.atualizarQuantidade(
+                                                carteiraEVenda.getIdCarteira(),
+                                                criptoVenda.getIdCriptoativo(),
+                                                criptoVenda.getQuantidade() - quantidadeVenda
+                                        );
+
+                                        carteiraEVenda.setSaldo(carteiraEVenda.getSaldo() + valorVenda);
+                                        carteiraDao.atualizarSaldo(carteiraEVenda.getIdCarteira(), valorVenda);
+
+                                        Transacao venda = new Transacao(TipoTransacaoEnum.VENDA, criptoVenda, quantidadeVenda, valorVenda);
+                                        transacaoDao.cadastrar(venda, conta.getIdConta());
+
+                                        criptoVenda.setQuantidade(criptoVenda.getQuantidade() - quantidadeVenda);
+
+                                        System.out.println("Venda realizada com sucesso!");
+
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao vender: " + e.getMessage());
                                     }
                                     break;
                                 case 10:
@@ -480,163 +610,7 @@ public class Main {
 
                                     LogService.registrarTransacoes(transacoesCarteira, carteiraEVTransacoes);
                                     break;
-                                case 12:
-                                    System.out.println("----------------------------------------------");
-                                    System.out.println("|          CADASTRAR ORDEM DE COMPRA         |");
-                                    System.out.println("----------------------------------------------");
 
-                                    Carteira carteiraOCompra = escolherCarteira(carteirasInvestidor, sc);
-
-                                    if (carteiraOCompra == null) {
-                                        break;
-                                    }
-
-                                    Criptoativo criptoativoOCompra = escolherCriptoativoCarteira(carteiraOCompra, sc);
-
-                                    if (criptoativoOCompra == null) {
-                                        break;
-                                    }
-
-                                    System.out.print("Informe o preço limite: ");
-                                    double precoLimite = sc.nextDouble();
-
-                                    try {
-                                        Ordem ordemComprar = new Ordem(TipoOrdemEnum.COMPRA, carteiraOCompra, criptoativoOCompra, precoLimite);
-                                        ordemComprar.adicionarOrdem();
-                                        System.out.println("Ordem de compra cadastrada com sucesso!");
-                                    } catch (Exception e) {
-                                        System.out.print(e.getMessage());
-                                    }
-                                    break;
-                                case 13:
-                                    System.out.println("----------------------------------------------");
-                                    System.out.println("|           CADASTRAR ORDEM DE VENDA         |");
-                                    System.out.println("----------------------------------------------");
-
-                                    Carteira carteiraOVenda = escolherCarteira(carteirasInvestidor, sc);
-                                    if (carteiraOVenda == null) {
-                                        break;
-                                    }
-
-                                    Criptoativo criptoativoOVenda = escolherCriptoativoCarteira(carteiraOVenda, sc);
-                                    if (criptoativoOVenda == null) {
-                                        break;
-                                    }
-
-                                    System.out.print("Informe o preço limite: ");
-                                    double precoLimiteVenda = sc.nextDouble();
-
-                                    try {
-                                        Ordem ordemVender = new Ordem(TipoOrdemEnum.VENDA, carteiraOVenda, criptoativoOVenda, precoLimiteVenda);
-                                        ordemVender.adicionarOrdem();
-                                        System.out.println("Ordem de venda cadastrada com sucesso!");
-                                    } catch (Exception e) {
-                                        System.out.println(e.getMessage());
-                                    }
-                                    break;
-                                case 14:
-                                    System.out.println("----------------------------------------------");
-                                    System.out.println("|                CANCELAR ORDEM              |");
-                                    System.out.println("----------------------------------------------");
-
-                                    Carteira carteiraOCancelar = escolherCarteira(carteirasInvestidor, sc);
-
-                                    if (carteiraOCancelar == null) {
-                                        break;
-                                    }
-
-                                    Ordem ordemECancelar = escolherOrdensCarteira(carteiraOCancelar, sc);
-
-                                    if (ordemECancelar == null) {
-                                        break;
-                                    }
-
-                                    try {
-                                        ordemECancelar.cancelarOrdem();
-                                        System.out.println("Ordem cancelada com sucesso!");
-                                    } catch (Exception e) {
-                                        System.out.println(e.getMessage());
-                                    }
-                                    break;
-                                case 15:
-                                    System.out.println("----------------------------------------------");
-                                    System.out.println("|                 ENVIAR ORDEM               |");
-                                    System.out.println("----------------------------------------------");
-
-                                    Carteira carteiraOEnviar = escolherCarteira(carteirasInvestidor, sc);
-
-                                    if (carteiraOEnviar == null) {
-                                        break;
-                                    }
-
-                                    Ordem ordemEEnviar = escolherOrdensCarteira(carteiraOEnviar, sc);
-
-                                    if (ordemEEnviar == null) {
-                                        break;
-                                    }
-
-                                    try {
-                                        ordemEEnviar.enviarOrdem();
-                                        System.out.println("Ordem enviada com sucesso!");
-                                    } catch (Exception e) {
-                                        System.out.println(e.getMessage());
-                                    }
-                                    break;
-                                case 16:
-                                    System.out.println("----------------------------------------------");
-                                    System.out.println("|               EXECUTAR ORDEM               |");
-                                    System.out.println("----------------------------------------------");
-
-                                    Carteira carteiraOExecutar = escolherCarteira(carteirasInvestidor, sc);
-
-                                    if (carteiraOExecutar == null) {
-                                        break;
-                                    }
-
-                                    Ordem ordemEExecutar = escolherOrdensCarteira(carteiraOExecutar, sc);
-
-                                    if (ordemEExecutar == null) {
-                                        break;
-                                    }
-
-                                    try {
-                                        ordemEExecutar.executarOrdem();
-                                        System.out.println("Ordem processada com sucesso!");
-                                    } catch (Exception e) {
-                                        System.out.println(e.getMessage());
-                                    }
-                                    break;
-                                case 17:
-                                    System.out.println("----------------------------------------------");
-                                    System.out.println("|             VISUALIZAR ORDEM               |");
-                                    System.out.println("----------------------------------------------");
-
-                                    Carteira carteiraEVOrdens = escolherCarteira(carteirasInvestidor, sc);
-
-                                    if (carteiraEVOrdens == null) {
-                                        break;
-                                    }
-
-                                    List<Ordem> ordensCarteira = carteiraEVOrdens.getOrdens();
-
-                                    if (ordensCarteira.isEmpty()) {
-                                        System.out.println("Nenhuma ordem encontrada!");
-                                        break;
-                                    }
-
-                                    for (Ordem ordem : ordensCarteira) {
-                                        System.out.printf(
-                                                "Código: %s | Status: %s | Tipo: %s | Criptoativo: %s | Carteira: %s | Preço limite: %.2f | Data: %s%n",
-                                                ordem.getCodigo(),
-                                                ordem.getStatus(),
-                                                ordem.getTipo(),
-                                                ordem.getCriptoativo().getSimbolo(),
-                                                ordem.getCarteira().getNome(),
-                                                ordem.getPrecoLimite(),
-                                                ordem.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))
-                                        );
-                                    }
-                                    break;
                                 default:
                                     System.out.println("Opção inválida!");
                             }
@@ -700,32 +674,6 @@ public class Main {
         }
 
         return criptoativosCarteira.get(escolhaCriptoativo - 1);
-    }
-
-    private static Ordem escolherOrdensCarteira(Carteira carteira, Scanner sc) {
-
-        System.out.println("Ordens na carteira:");
-        List<Ordem> ordensCarteira = carteira.getOrdens();
-
-        if (ordensCarteira.isEmpty()) {
-            System.out.println("Nenhuma ordem encontrada!");
-            return null;
-        }
-
-        for (int j = 0; j < ordensCarteira.size(); j++) {
-            Ordem ordem = ordensCarteira.get(j);
-            System.out.printf("%d- Código: %s | Status: %s | Preço limite: R$%.2f%n",
-                    j + 1, ordem.getCodigo(), ordem.getStatus(), ordem.getPrecoLimite());
-        }
-
-        System.out.print("Escolha uma ordem (número): ");
-        int ordemE = sc.nextInt();
-        if (ordemE < 1 || ordemE > ordensCarteira.size()) {
-            System.out.println("Opção inválida!");
-            return null;
-        }
-
-        return ordensCarteira.get(ordemE - 1);
     }
 
     private static void voltarMenuPrincipal(Scanner sc) {
