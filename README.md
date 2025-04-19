@@ -3,7 +3,6 @@
 [![Java](https://img.shields.io/badge/Java-23-blue)](https://www.oracle.com/java/)
 [![OracleDB](https://img.shields.io/badge/OracleSQL-23c-red)](https://www.oracle.com/database/)
 [![Maven](https://img.shields.io/badge/Maven-3.9+-blue)](https://maven.apache.org)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 Plataforma de simulação de investimentos em criptomoedas desenvolvida com:
 
