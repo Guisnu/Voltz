@@ -7,11 +7,9 @@ public class Carteira {
 
     Integer idCarteira;
     private String nome;
-    private Conta conta;
     private double saldo;
     private List<Criptoativo> criptoativos = new ArrayList<>();
     private List<Transacao> transacoes = new ArrayList<>();
-    private List<Ordem> ordens = new ArrayList<>();
     private double saldoResv = 0.0;
 
     public Carteira(){}
@@ -52,22 +50,6 @@ public class Carteira {
         this.saldoResv = saldoResv;
     }
 
-    //trocado if por while?
-    public void depositar(double valor) {
-        if (valor < 0) {
-            throw new IllegalArgumentException("O valor deve ser maior que Zero!");
-        }
-
-        double saldoConta = this.conta.getSaldo();
-
-        if (saldoConta < valor) {
-            throw new IllegalArgumentException("Saldo insuficiente!");
-        }
-
-        this.conta.setSaldo(saldoConta - valor);
-        this.saldo = valor;
-    }
-
     public void adicionarCriptoativo(Criptoativo criptoativo) {
         criptoativos.add(criptoativo);
     }
@@ -88,13 +70,6 @@ public class Carteira {
         return transacoes;
     }
 
-    public void adicionarOrdens(Ordem ordem) {
-        ordens.add(ordem);
-    }
-
-    public List<Ordem> getOrdens() {
-        return ordens;
-    }
 
     public double calcularValorTotal() {
         //Banco de dados

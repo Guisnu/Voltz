@@ -1,5 +1,6 @@
 package com.grupo.voltz.dao;
 
+import com.grupo.voltz.model.Conta;
 import com.grupo.voltz.model.Transacao;
 import com.grupo.voltz.services.ConnectionService;
 
@@ -25,20 +26,18 @@ public class TransacaoDao {
     }
 
     // Método para cadastrar (inserir) uma transação no banco
-    public void cadastrar(Transacao transacao) throws SQLException {
+    public void cadastrar(Transacao transacao, Integer idconta) throws SQLException {
         // Supondo que existe uma sequência 'seq_transacao' para gerar id_transacao
-        String sql = "INSERT INTO transacao (id_transacao, tipo, criptoativo_id, quantidade, valor, data_transacao)" +
-                "VALUES (seq_transacao.nextval, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO transacao (tipo, idCriptoAtivo, quantidade, valor, data, idconta)" +
+                "VALUES (?, ?, ?, ?, ?, ?)";
         PreparedStatement stm = conexao.prepareStatement(sql);
 
-        // Converte o enum para String
         stm.setString(1, transacao.getTipo().name());
-        // Utiliza o id do criptoativo associado (é esperado que Criptoativo tenha o método getId())
+        stm.setInt(2,transacao.getCriptoativo().getIdCriptoativo());
         stm.setDouble(3, transacao.getQuantidade());
         stm.setDouble(4, transacao.getValor());
-        // Converte LocalDateTime para Timestamp
         stm.setTimestamp(5, Timestamp.valueOf(transacao.getData()));
-
+        stm.setInt(6, idconta);
         stm.executeUpdate();
     }
 

@@ -24,12 +24,11 @@ public class CarteiraDao {
     }
 
     public void cadastrar(int idconta, Carteira carteira) throws SQLException {
-        String sql = "INSERT INTO Carteira (idConta, nome, criptoativos, saldo) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Carteira (idConta, nome, saldo) VALUES (?, ?, ?)";
         try (PreparedStatement stm = conexao.prepareStatement(sql)) {
             stm.setLong(1, idconta);
             stm.setString(2, carteira.getNome());
-            stm.setInt(3, carteira.getCriptoativos().size());
-            stm.setDouble(4, carteira.getSaldo());
+            stm.setDouble(3, carteira.getSaldo());
             stm.executeUpdate();
         }
     }
@@ -68,7 +67,16 @@ public class CarteiraDao {
      * Atualiza o saldo de uma carteira.
      */
     public void atualizarSaldo(Integer idCarteira, double novoSaldo) throws SQLException {
-        String sql = "UPDATE Carteira SET saldo = + ? WHERE idCarteira = ?";
+        String sql = "UPDATE Carteira SET saldo = saldo + ? WHERE idCarteira = ?";
+        try (PreparedStatement stm = conexao.prepareStatement(sql)) {
+            stm.setDouble(1, novoSaldo);
+            stm.setInt(2, idCarteira);
+            stm.executeUpdate();
+        }
+    }
+
+    public void compra(Integer idCarteira, double novoSaldo) throws SQLException {
+        String sql = "UPDATE Carteira SET saldo = saldo - ? WHERE idCarteira = ?";
         try (PreparedStatement stm = conexao.prepareStatement(sql)) {
             stm.setDouble(1, novoSaldo);
             stm.setInt(2, idCarteira);

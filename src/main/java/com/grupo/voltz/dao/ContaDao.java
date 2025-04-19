@@ -23,13 +23,12 @@ public class ContaDao {
     }
 
     public void cadastrar(Conta conta) throws SQLException {
-        PreparedStatement stm = conexao.prepareStatement("INSERT INTO Conta (nomeinvestidor, emailInvestidor, senhaInvestidor, saldo, carteiras, movimentacoes ) VALUES (?,?,?,?,?,?)");
+        PreparedStatement stm = conexao.prepareStatement("INSERT INTO Conta (nomeinvestidor, emailInvestidor, senhaInvestidor, saldo, carteiras ) VALUES (?,?,?,?,?)");
         stm.setString(1, conta.getNomeInvestidor());
         stm.setString(2, conta.getEmailInvestidor());
         stm.setString(3, conta.getSenhaInvestidor());
         stm.setDouble(4, conta.getSaldo());
         stm.setInt(5, conta.getCarteiras().size());
-        stm.setInt(6, conta.getMovimentacoes().size());
         stm.executeUpdate();
     }
     public boolean pesquisar_email(String email) throws SQLException {
@@ -45,15 +44,8 @@ public class ContaDao {
         String email = result.getString("emailInvestidor");
         String senha = result.getString("senhaInvestidor");
         double saldo = result.getDouble("saldo");
-        int numeroCarteiras = result.getInt("carteiras");
-        int movimentacoes = result.getInt("movimentacoes");
 
-        List<Carteira> carteiras = new ArrayList<>();
-        for (int i = 0; i < numeroCarteiras; i++) {
-            carteiras.add(new Carteira());
-        }
-
-        return new Conta(id, nome, email, senha, saldo, carteiras, movimentacoes);
+        return new Conta(id, nome, email, senha, saldo, new ArrayList<>());
     }
 
     public List<Conta> listar()throws SQLException{
@@ -74,23 +66,13 @@ public class ContaDao {
         ResultSet result = stm.executeQuery();
 
         if (result.next()) {
-            // Obtenção dos dados da conta
             Integer id = result.getInt("id_conta");
             String nome = result.getString("nomeInvestidor");
             double saldo = result.getDouble("saldo");
-            int numeroCarteiras = result.getInt("carteiras");
-            int movimentacoes = result.getInt("movimentacoes");
 
-            List<Carteira> carteiras = new ArrayList<>();
-            for (int i = 0; i < numeroCarteiras; i++) {
-                carteiras.add(new Carteira());
-            }
+            Conta conta = new Conta(id, nome, email, senha, saldo, new ArrayList<>());
 
-            // Constrói o objeto Conta com os dados recuperados
-
-            // Não é feita nenhuma chamada para cadastrar a conta no banco,
-            // pois ela já existe.
-            return new Conta(id, nome, email, senha, saldo, carteiras, movimentacoes);
+            return conta;
         }
         return null;
     }
@@ -119,6 +101,24 @@ public class ContaDao {
         PreparedStatement stmConta = conexao.prepareStatement(sqlConta);
         stmConta.setInt(1, id_Conta);
         stmConta.executeUpdate();
+    }
+
+    public void atualizarSaldo(int idConta, double novoSaldo) throws SQLException {
+        String sql = "UPDATE Conta SET saldo = ? WHERE id_conta = ?";
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setDouble(1, novoSaldo);
+            stmt.setInt(2, idConta);
+            stmt.executeUpdate();
+        }
+    }
+
+    public void atualizarQuantidadeCarteiras(int idConta, int novaQuantidade) throws SQLException {
+        String sql = "UPDATE Conta SET carteiras = ? WHERE id_conta = ?";
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setInt(1, novaQuantidade);
+            stmt.setInt(2, idConta);
+            stmt.executeUpdate();
+        }
     }
 
 }
