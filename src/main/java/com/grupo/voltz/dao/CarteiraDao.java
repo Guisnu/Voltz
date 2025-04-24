@@ -54,11 +54,11 @@ public class CarteiraDao {
     /**
      * Atualiza o nome de uma carteira.
      */
-    public void atualizarNome(String nomeAtualCarteira, String novoNome) throws SQLException {
-        String sql = "UPDATE Carteira SET nome = ? WHERE nome = ?";
+    public void atualizarNome(int idCarteira, String novoNome) throws SQLException {
+        String sql = "UPDATE Carteira SET nome = ? WHERE idCarteira = ?";
         try (PreparedStatement stm = conexao.prepareStatement(sql)) {
             stm.setString(1, novoNome);
-            stm.setString(2, nomeAtualCarteira);
+            stm.setInt(2, idCarteira);
             stm.executeUpdate();
         }
     }

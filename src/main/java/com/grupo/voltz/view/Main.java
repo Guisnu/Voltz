@@ -274,7 +274,6 @@ public class Main {
                             while(!SairMenuDao){
                                 String confirmacao;
                                 int opDao;
-                                System.out.println(conta.getIdConta());
                                 System.out.println("---------------------------------------");
                                 System.out.println("|           TESTE DO BANCO            |");
                                 System.out.println("---------------------------------------");
@@ -293,6 +292,7 @@ public class Main {
                                 System.out.println("|  8  | Deletar Transacao              |");
                                 System.out.println("|  0  | Sair                           |");
 
+                                System.out.print("\nEscolha uma opção: ");
                                 opDao =  sc.nextInt();
 
                                 switch (opDao) {
@@ -346,24 +346,41 @@ public class Main {
                                         break;
 
                                     case 4:
-
                                         if (carteirasInvestidor.isEmpty()) {
                                             System.out.println("Opção inválida! Cadastre uma carteira primeiro.");
                                             break;
-                                        }else{
-                                            System.out.println("Carteiras atuais");
-                                            for (Carteira carteira : carteirasInvestidor) {
-                                                System.out.println("Nome: " + carteira.getNome() + ", Saldo: R$" + carteira.getSaldo());
-                                            }
-                                            System.out.println("Digite o nome da carteira que deseja alterar: ");
-                                            sc.nextLine();
-                                            String nomeAtualCarteira = sc.nextLine();
-                                            System.out.println("Digite o novo nome da carteira: ");
-                                            String novoNomeCarteira = sc.nextLine();
-                                            carteiraDao.atualizarNome(nomeAtualCarteira, novoNomeCarteira);
-
                                         }
 
+                                        System.out.println("\n--- CARTEIRAS DISPONÍVEIS ---");
+                                        for (int i = 0; i < carteirasInvestidor.size(); i++) {
+                                            Carteira c = carteirasInvestidor.get(i);
+                                            System.out.printf("%d - %s | Saldo: R$%.2f%n",
+                                                    i + 1, c.getNome(), c.getSaldo());
+                                        }
+
+                                        System.out.print("\nEscolha a carteira pelo número: ");
+                                        int escolha = sc.nextInt();
+                                        sc.nextLine();
+
+                                        if (escolha < 1 || escolha > carteirasInvestidor.size()) {
+                                            System.out.println("Número inválido!");
+                                            break;
+                                        }
+
+                                        Carteira carteiraSelecionada = carteirasInvestidor.get(escolha - 1);
+
+                                        System.out.print("Digite o novo nome da carteira: ");
+                                        novoNome = sc.nextLine();
+
+                                        try {
+                                            carteiraDao.atualizarNome(carteiraSelecionada.getIdCarteira(), novoNome);
+
+                                            carteiraSelecionada.setNome(novoNome);
+
+                                            System.out.println("Nome atualizado com sucesso!");
+                                        } catch (SQLException e) {
+                                            System.out.println("Erro ao atualizar: " + e.getMessage());
+                                        }
                                         break;
 
                                     case 5:
@@ -431,7 +448,6 @@ public class Main {
 
                                         IdCriptoativoEscolhido = criptoativoEscolhido.getIdCriptoativo();
 
-                                        System.out.println("Digite o novo valor para " + criptoativoEscolhido.getNome() + " : ");
                                         double novoPreco;
 
                                         do {
@@ -476,7 +492,7 @@ public class Main {
                                         }
 
                                         System.out.print("\nDigite o número da transação que deseja excluir: ");
-                                        int escolha = sc.nextInt();
+                                        escolha = sc.nextInt();
 
                                         if (escolha < 1 || escolha > transacoesConta.size()) {
                                             System.out.println("Opção inválida.");
@@ -519,7 +535,7 @@ public class Main {
                                 case 5:
                                     System.out.println("Carteiras disponíveis:");
                                     for (Carteira carteira : carteirasInvestidor) {
-                                        System.out.println("Id banco: " + carteira.getIdCarteira() + " Nome: " + carteira.getNome() + ", Saldo: R$" + carteira.getSaldo());
+                                        System.out.println("Nome: " + carteira.getNome() + ", Saldo: R$" + carteira.getSaldo());
                                     }
                                     break;
 
@@ -586,20 +602,34 @@ public class Main {
                                     }
 
                                     try {
+                                        double saldoDevolvido = carteiraDel.getSaldo();
+
+                                        if (saldoDevolvido > 0) {
+                                            conta.setSaldo(conta.getSaldo() + saldoDevolvido);
+
+                                            // Atualiza o saldo no banco de dados
+                                            contadao.atualizarSaldo(conta.getIdConta(), conta.getSaldo());
+
+                                            System.out.printf(
+                                                    "Saldo de R$%.2f devolvido para a conta principal.%n",
+                                                    saldoDevolvido
+                                            );
+                                        }
+
                                         carteiraDao.deletar(carteiraDel.getIdCarteira());
 
-                                        // Remove da conta (em memória)
                                         conta.removerCarteira(carteiraDel);
 
-                                        // Atualiza a quantidade no banco
-                                        contadao.atualizarQuantidadeCarteiras(
-                                                conta.getIdConta(),
-                                                conta.getCarteiras().size()
-                                        );
+                                        contadao.atualizarQuantidadeCarteiras(conta.getIdConta(), conta.getCarteiras().size());
 
                                         System.out.println("Carteira deletada com sucesso!");
+
                                     } catch (SQLException e) {
                                         System.out.println("Erro ao deletar carteira: " + e.getMessage());
+                                        // Reverte as alterações em memória em caso de erro
+                                        if (carteiraDel.getSaldo() > 0) {
+                                            conta.setSaldo(conta.getSaldo() - carteiraDel.getSaldo());
+                                        }
                                     }
                                     break;
 
@@ -777,29 +807,33 @@ public class Main {
                                     break;
                                 case 11:
                                     System.out.println("----------------------------------------------");
-                                    System.out.println("|            VISUALIZAR TRANSAÇÕES           |");
+                                    System.out.println("|            TRANSAÇÕES DA CONTA             |");
                                     System.out.println("----------------------------------------------");
 
-                                    Carteira carteiraEVTransacoes = escolherCarteira(carteirasInvestidor, sc);
+                                    try {
+                                        List<Transacao> transacoes = transacaoDao.listarPorConta(conta.getIdConta());
 
-                                    if (carteiraEVTransacoes == null) {
-                                        break;
+                                        if (transacoes.isEmpty()) {
+                                            System.out.println("Nenhuma transação encontrada.");
+                                            break;
+                                        }
+
+                                        // Formatação melhorada para exibição
+                                        System.out.printf("%-8s | %-8s | %-12s | %-10s | %-20s%n",
+                                                "Tipo", "Ativo", "Quantidade", "Valor (R$)", "Data");
+                                        System.out.println("------------------------------------------------------------------------");
+
+                                        for (Transacao t : transacoes) {
+                                            System.out.printf("%-8s | %-8s | %-12.6f | %-10.2f | %-20s%n",
+                                                    t.getTipo(),
+                                                    t.getCriptoativo().getSimbolo(),
+                                                    t.getQuantidade(),
+                                                    t.getValor(),
+                                                    t.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                                        }
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao carregar transações: " + e.getMessage());
                                     }
-
-                                    List<Transacao> transacoesCarteira = carteiraEVTransacoes.getTransacoes();
-
-                                    for (Transacao transacao : transacoesCarteira) {
-                                        System.out.printf(
-                                                "Tipo: %s | Criptoativo: %s | Quantidade: %.8f | Valor: %.2f | Data: %s%n",
-                                                transacao.getTipo(),
-                                                transacao.getCriptoativo().getSimbolo(),
-                                                transacao.getQuantidade(),
-                                                transacao.getValor(),
-                                                transacao.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))
-                                        );
-                                    }
-
-                                    LogService.registrarTransacoes(transacoesCarteira, carteiraEVTransacoes);
                                     break;
 
                                 default:

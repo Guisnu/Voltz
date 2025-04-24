@@ -82,6 +82,8 @@ public class Carteira {
         return total;
     }
 
+    public void setNome(String novoNomeCarteira) {this.nome = novoNomeCarteira;}
+
     // Método para exibir informações da carteira (para fins de log ou auditoria)
     // @Override
     // public String toString() {

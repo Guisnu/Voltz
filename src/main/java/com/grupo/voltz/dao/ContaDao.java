@@ -79,23 +79,51 @@ public class ContaDao {
         stm.executeUpdate();
     }
 
-    public void deletarConta(Integer id_Conta) throws SQLException {
+    public void deletarConta(Integer idConta) throws SQLException {
+        try {
+            conexao.setAutoCommit(false);
 
-        String sqlCarteiras = "DELETE FROM Carteira WHERE idconta = ?";
-        PreparedStatement stmCarteiras = conexao.prepareStatement(sqlCarteiras);
-        stmCarteiras.setInt(1, id_Conta);
-        stmCarteiras.executeUpdate();
+            String sqlBuscaCarteiras = "SELECT idCarteira FROM Carteira WHERE idConta = ?";
+            PreparedStatement buscarCarteiras = conexao.prepareStatement(sqlBuscaCarteiras);
+            buscarCarteiras.setInt(1, idConta);
+            ResultSet rsCarteiras = buscarCarteiras.executeQuery();
 
-        String sqlTransacoes = "DELETE FROM Transacao WHERE idconta = ?";
-        PreparedStatement stmTransacoes = conexao.prepareStatement(sqlTransacoes);
-        stmTransacoes.setInt(1, id_Conta);
-        stmTransacoes.executeUpdate();
+            List<Integer> idsCarteiras = new ArrayList<>();
+            while (rsCarteiras.next()) {
+                idsCarteiras.add(rsCarteiras.getInt("idCarteira"));
+            }
 
-        String sqlConta = "DELETE FROM Conta WHERE id_conta = ?";
-        PreparedStatement stmConta = conexao.prepareStatement(sqlConta);
-        stmConta.setInt(1, id_Conta);
-        stmConta.executeUpdate();
+            // 2. Apagar criptoativos das carteiras
+            for (Integer idCarteira : idsCarteiras) {
+                PreparedStatement delCriptoativos = conexao.prepareStatement("DELETE FROM Carteira_Criptoativo WHERE idCarteira = ?");
+                delCriptoativos.setInt(1, idCarteira);
+                delCriptoativos.executeUpdate();
+            }
+
+            // 3. Apagar transações da conta
+            PreparedStatement delTransacoes = conexao.prepareStatement("DELETE FROM Transacao WHERE idConta = ?");
+            delTransacoes.setInt(1, idConta);
+            delTransacoes.executeUpdate();
+
+            // 4. Apagar carteiras
+            PreparedStatement delCarteiras = conexao.prepareStatement("DELETE FROM Carteira WHERE idConta = ?");
+            delCarteiras.setInt(1, idConta);
+            delCarteiras.executeUpdate();
+
+            // 5. Apagar a conta
+            PreparedStatement delConta = conexao.prepareStatement("DELETE FROM Conta WHERE id_conta = ?");
+            delConta.setInt(1, idConta);
+            delConta.executeUpdate();
+
+            conexao.commit();
+        } catch (SQLException e) {
+            conexao.rollback();
+            System.out.println("Erro ao excluir conta: " + e.getMessage());
+        } finally {
+            conexao.setAutoCommit(true);
+        }
     }
+
 
     public void atualizarSaldo(int idConta, double novoSaldo) throws SQLException {
         String sql = "UPDATE Conta SET saldo = ? WHERE id_conta = ?";
