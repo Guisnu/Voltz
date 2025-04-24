@@ -3,15 +3,17 @@ package com.grupo.voltz.model;
 import com.grupo.voltz.enums.TipoTransacaoEnum;
 import com.grupo.voltz.services.TransacaoService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Transacao {
 
+    private Integer IdTransacao;
     private TipoTransacaoEnum tipo;
     private Criptoativo criptoativo;
     private double quantidade;
     private double valor;
-    private LocalDateTime data = LocalDateTime.now();
+    private LocalDate data = LocalDate.now();
 
     public Transacao(TipoTransacaoEnum tipo, Criptoativo criptoativo, Double quantidade, double valor) {
         if (valor < 0) {
@@ -22,6 +24,12 @@ public class Transacao {
         this.valor = valor;
         this.quantidade = quantidade;
     }
+
+    public void setData(LocalDate localDate) {this.data = localDate;}
+
+    public void setIdTransacao(int idTransacao) {this.IdTransacao = idTransacao;}
+
+    public int getIdTransacao() {return IdTransacao;}
 
     public TipoTransacaoEnum getTipo() {
         return tipo;
@@ -35,24 +43,12 @@ public class Transacao {
         return valor;
     }
 
-    public LocalDateTime getData() {
+    public LocalDate getData() {
         return data;
     }
 
     public Criptoativo getCriptoativo() {
         return criptoativo;
-    }
-
-    public void setQuantidade(double valor) {
-        if (valor < 0) {
-            throw new IllegalArgumentException("O valor deve ser maior que Zero!");
-        }
-        this.quantidade = valor / this.criptoativo.getPrecoAtual();
-    }
-
-    public void executarTransacao(Carteira carteira) {
-        TransacaoService service = new TransacaoService(this, carteira);
-        service.handle();
     }
 
 }
