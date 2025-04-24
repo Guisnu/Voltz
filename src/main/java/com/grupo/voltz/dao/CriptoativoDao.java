@@ -21,9 +21,9 @@ public class CriptoativoDao {
         }
     }
 
-    /**
-     * Insere um novo Criptoativo na base
-     */
+
+//     Insere um novo Criptoativo na base
+
     public void fetch(Criptoativo cripto) throws SQLException {
         String sql = "INSERT INTO Criptoativo (nome, simbolo, precoAtual) " +
                 "VALUES (?, ?, ?)";
@@ -46,9 +46,9 @@ public class CriptoativoDao {
         }
     }
 
-    /**
-     * Verifica existência por símbolo
-     */
+
+    //Verifica existência por símbolo
+
     public boolean existePorSimbolo(String simbolo) throws SQLException {
         String sql = "SELECT 1 FROM Criptoativo WHERE simbolo = ?";
         try (PreparedStatement stm = conexao.prepareStatement(sql)) {
@@ -59,9 +59,9 @@ public class CriptoativoDao {
         }
     }
 
-    /**
-     * Atualiza preço de um criptoativo existente
-     */
+
+    //Atualiza preço de um criptoativo existente
+
     public void atualizarPreco(int idCripto, double novoPreco) throws SQLException {
         String sql = "UPDATE Criptoativo SET precoAtual = ? WHERE idCriptoativo = ?";
         try (PreparedStatement stm = conexao.prepareStatement(sql)) {
@@ -71,9 +71,9 @@ public class CriptoativoDao {
         }
     }
 
-    /**
-     * Remove um criptoativo pelo ID
-     */
+
+    //Remove um criptoativo pelo ID
+
     public void deletar(int idCripto) throws SQLException {
         String sql = "DELETE FROM Criptoativo WHERE idCriptoativo = ?";
         try (PreparedStatement stm = conexao.prepareStatement(sql)) {
@@ -92,25 +92,10 @@ public class CriptoativoDao {
         return cripto;
     }
 
-    /**
-     * Busca um criptoativo pelo ID
-     */
-    public Criptoativo buscarPorId(int idCripto) throws SQLException {
-        String sql = "SELECT * FROM Criptoativo WHERE idCriptoativo = ?";
-        try (PreparedStatement stm = conexao.prepareStatement(sql)) {
-            stm.setInt(1, idCripto);
-            try (ResultSet rs = stm.executeQuery()) {
-                if (rs.next()) {
-                    return parseCriptoativo(rs);
-                }
-            }
-        }
-        return null;
-    }
 
-    /**
-     * Lista todos os criptoativos cadastrados
-     */
+
+    //Lista todos os criptoativos cadastrados
+
     public List<Criptoativo> listarTodos() throws SQLException {
         String sql = "SELECT * FROM Criptoativo";
         List<Criptoativo> lista = new ArrayList<>();

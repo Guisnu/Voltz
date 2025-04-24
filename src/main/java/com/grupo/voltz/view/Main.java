@@ -73,6 +73,12 @@ public class Main {
                             } else {
                                 carteiraDao.recuperarCarteiras(conta);
 
+                                try {
+                                    carteiraCriptoDao.limparCriptoativosZerados();
+                                } catch (SQLException e) {
+                                    System.out.println("Aviso: Não foi possível limpar criptoativos zerados");
+                                }
+
                                 for (Carteira carteira : conta.getCarteiras()) {
                                     List<Criptoativo> criptoativos = carteiraCriptoDao.listarCriptoativosPorCarteira(carteira.getIdCarteira());
                                     for (Criptoativo c : criptoativos) {
@@ -169,6 +175,9 @@ public class Main {
 
                     switch (opPrincipal) {
                         case 1:
+                            System.out.println("----------------------------------------------");
+                            System.out.println("|                   DEPOSITO                 |");
+                            System.out.println("----------------------------------------------");
                             System.out.print("Informe o valor do depósito: ");
                             double deposito = sc.nextDouble();
                             if (deposito <= 0) {
@@ -195,25 +204,42 @@ public class Main {
                             break;
 
                         case 3:
-                            System.out.print("Informe o valor do saque: ");
-                            double saque = sc.nextDouble();
-                            if (saque <= 0) {
-                                System.out.println("Valor inválido! Deve ser maior que zero.");
+                            System.out.println("----------------------------------------------");
+                            System.out.println("|                  SACAR                     |");
+                            System.out.println("----------------------------------------------");
+
+                            // Mostra saldo atual
+                            System.out.printf("Saldo disponível: R$%.2f%n", conta.getSaldo());
+
+                            System.out.print("Informe o valor do saque: R$");
+                            double valorSaque = sc.nextDouble();
+
+                            // Validações
+                            if (valorSaque <= 0) {
+                                System.out.println("Valor inválido! O valor deve ser maior que zero.");
+                                break;
+                            }
+
+                            if (valorSaque > conta.getSaldo()) {
+                                System.out.println("Saldo insuficiente para realizar o saque!");
                                 break;
                             }
 
                             try {
-                                // Tenta sacar (verifica saldo suficiente)
-                                if (conta.sacar(saque)) {
-                                    // Atualiza o saldo no banco
+                                // Realiza o saque na conta (em memória)
+                                if (conta.sacar(valorSaque)) {
+                                    // Atualiza o saldo no banco de dados
                                     contadao.atualizarSaldo(conta.getIdConta(), conta.getSaldo());
-                                    System.out.printf("Saque de R$%.2f realizado! Saldo atual: R$%.2f%n",
-                                            saque, conta.getSaldo());
+
+                                    System.out.printf("Saque de R$%.2f realizado com sucesso!%n", valorSaque);
+                                    System.out.printf("Novo saldo: R$%.2f%n", conta.getSaldo());
                                 } else {
-                                    System.out.println("Saldo insuficiente!");
+                                    System.out.println("Não foi possível realizar o saque.");
                                 }
                             } catch (SQLException e) {
-                                System.out.println("Erro ao sacar: " + e.getMessage());
+                                // Em caso de erro, reverte o saque em memória
+                                conta.depositar(valorSaque);
+                                System.out.println("Erro ao realizar saque: " + e.getMessage());
                             }
                             break;
 
@@ -246,6 +272,7 @@ public class Main {
                         case 100:
                             SairMenuDao = false;
                             while(!SairMenuDao){
+                                String confirmacao;
                                 int opDao;
                                 System.out.println(conta.getIdConta());
                                 System.out.println("---------------------------------------");
@@ -260,6 +287,10 @@ public class Main {
                                 System.out.println("|  4  | Mudar nome da carteira         |");
                                 System.out.println("|              CRIPTODAO               |");
                                 System.out.println("|  5  | Adicionar cripto               |");
+                                System.out.println("|  6  | Remover cripto do mercado(BETA)|");
+                                System.out.println("|  7  | Atualizar preço do criptoativo |");
+                                System.out.println("|              TRANSACAODAO            |");
+                                System.out.println("|  8  | Deletar Transacao              |");
                                 System.out.println("|  0  | Sair                           |");
 
                                 opDao =  sc.nextInt();
@@ -295,7 +326,7 @@ public class Main {
                                     case 3:
                                         System.out.print("Tem certeza que deseja excluir sua conta? (S/N): ");
                                         sc.nextLine();
-                                        String confirmacao = sc.nextLine().trim().toUpperCase();
+                                        confirmacao = sc.nextLine().trim().toUpperCase();
 
                                         if (!confirmacao.equals("S")) {
                                             System.out.println("Operação cancelada.");
@@ -344,7 +375,127 @@ public class Main {
                                         System.out.println("Digite o valor do criptoativo: ");
                                         Double valorcripto =  sc.nextDouble();
                                         criptoativoDao.cadastrar(nomecripto, simbolocripto, valorcripto);
+
+                                        System.out.println("Criptoativo criado com sucesso!");
                                         break;
+
+                                    case 6:
+                                        List<Criptoativo> criptoativosBanco = criptoativoDao.listarTodos();
+                                        for (int i = 0; i < criptoativosBanco.size(); i++) {
+                                            Criptoativo c = criptoativosBanco.get(i);
+                                            System.out.printf("%d- Símbolo: %s | Nome: %s | Preço: R$%.2f%n",
+                                                    i + 1, c.getSimbolo(), c.getNome(), c.getPrecoAtual());
+                                        }
+
+                                        System.out.print("Escolha um criptoativo para deletar (número): ");
+                                        int escolhaCripto = sc.nextInt();
+                                        if (escolhaCripto < 1 || escolhaCripto > criptoativosBanco.size()) {
+                                            System.out.println("Opção inválida!");
+                                            break;
+                                        }
+
+                                        Criptoativo criptoativoEscolhido = criptoativosBanco.get(escolhaCripto - 1);
+
+                                        int IdCriptoativoEscolhido = criptoativoEscolhido.getIdCriptoativo();
+
+                                        System.out.print("Tem certeza que deseja excluir " + criptoativoEscolhido.getNome() + "? (S/N): ");
+                                        sc.nextLine();
+                                        confirmacao = sc.nextLine().trim().toUpperCase();
+
+                                        if (!confirmacao.equals("S")) {
+                                            System.out.println("\nOperação cancelada.");
+                                            break;
+                                        }
+
+                                        criptoativoDao.deletar(IdCriptoativoEscolhido);
+                                        System.out.println("\nCripto deletada com sucesso!");
+                                        break;
+
+                                    case 7:
+                                        criptoativosBanco = criptoativoDao.listarTodos();
+                                        for (int i = 0; i < criptoativosBanco.size(); i++) {
+                                            Criptoativo c = criptoativosBanco.get(i);
+                                            System.out.printf("%d- Símbolo: %s | Nome: %s | Preço: R$%.2f%n",
+                                                    i + 1, c.getSimbolo(), c.getNome(), c.getPrecoAtual());
+                                        }
+
+                                        System.out.print("Escolha um criptoativo atualizar valor (número): ");
+                                        escolhaCripto = sc.nextInt();
+
+                                        if (escolhaCripto < 1 || escolhaCripto > criptoativosBanco.size()) {
+                                            System.out.println("Opção inválida!");
+                                            break;
+                                        }
+
+                                        criptoativoEscolhido = criptoativosBanco.get(escolhaCripto - 1);
+
+                                        IdCriptoativoEscolhido = criptoativoEscolhido.getIdCriptoativo();
+
+                                        System.out.println("Digite o novo valor para " + criptoativoEscolhido.getNome() + " : ");
+                                        double novoPreco;
+
+                                        do {
+                                            System.out.println("Digite o novo valor para " + criptoativoEscolhido.getNome() + ": ");
+                                            novoPreco = sc.nextDouble();
+
+                                            if (novoPreco < 0) {
+                                                System.out.println("Valor inválido. Digite um valor positivo.");
+                                            }
+                                        } while (novoPreco < 0);
+
+                                        System.out.print("Tem certeza que deseja modificar " + criptoativoEscolhido.getNome() + "? (S/N): ");
+                                        sc.nextLine();
+                                        confirmacao = sc.nextLine().trim().toUpperCase();
+
+                                        if (!confirmacao.equals("S")) {
+                                            System.out.println("\nOperação cancelada.");
+                                            break;
+                                        }
+                                        criptoativoDao.atualizarPreco(IdCriptoativoEscolhido, novoPreco);
+                                        break;
+
+                                    case 8:
+                                        System.out.println("=== TRANSACOES DA CONTA ===");
+
+                                        List<Transacao> transacoesConta = transacaoDao.listarPorConta(conta.getIdConta());
+
+                                        if (transacoesConta.isEmpty()) {
+                                            System.out.println("Nenhuma transação encontrada.");
+                                            break;
+                                        }
+
+                                        for (int i = 0; i < transacoesConta.size(); i++) {
+                                            Transacao t = transacoesConta.get(i);
+                                            System.out.printf("%d - %s | %s (%.6f) | Valor: R$%.2f | Data: %s%n",
+                                                    i + 1,
+                                                    t.getTipo(),
+                                                    t.getCriptoativo().getSimbolo(),
+                                                    t.getQuantidade(),
+                                                    t.getValor(),
+                                                    t.getData());
+                                        }
+
+                                        System.out.print("\nDigite o número da transação que deseja excluir: ");
+                                        int escolha = sc.nextInt();
+
+                                        if (escolha < 1 || escolha > transacoesConta.size()) {
+                                            System.out.println("Opção inválida.");
+                                            break;
+                                        }
+
+                                        int idExcluir = transacoesConta.get(escolha - 1).getIdTransacao();
+
+                                        System.out.print("Confirmar exclusão? (s/n): ");
+                                        confirmacao = sc.next();
+
+                                        if (confirmacao.equalsIgnoreCase("s")) {
+                                            transacaoDao.deletarTransacao(idExcluir);
+                                            System.out.println("Transação excluída com sucesso.");
+                                        } else {
+                                            System.out.println("Operação cancelada.");
+                                        }
+                                        break;
+
 
                                     case 0:
                                         System.out.println("Voltando para o menu...");
@@ -355,7 +506,7 @@ public class Main {
 
                         case 0:
                             System.out.println("Saindo da conta...");
-                            conta = null; // Desloga o usuário
+                            conta = null;
                             break;
 
                         default:
@@ -374,28 +525,50 @@ public class Main {
 
                                 case 6:
                                     System.out.println("----------------------------------------------");
-                                    System.out.println("|         TRANSFERIR VALOR NA CARTEIRA       |");
+                                    System.out.println("|         TRANSFERIR VALOR PARA CARTEIRA     |");
                                     System.out.println("----------------------------------------------");
 
-                                    Carteira carteiraEscolhida = escolherCarteira(carteirasInvestidor, sc);
+                                    // Mostrar saldo atual
+                                    System.out.printf("Saldo atual da conta: R$%.2f%n", conta.getSaldo());
 
+                                    Carteira carteiraEscolhida = escolherCarteira(carteirasInvestidor, sc);
                                     if (carteiraEscolhida == null) {
                                         break;
                                     }
 
-                                    System.out.print("Informe a quantidade do depósito: ");
-                                    double valorDeposito = sc.nextDouble();
+                                    System.out.print("Informe o valor a transferir: R$");
+                                    double valorTransferencia = sc.nextDouble();
+
+                                    // Validações
+                                    if (valorTransferencia <= 0) {
+                                        System.out.println("Valor inválido! Deve ser maior que zero.");
+                                        break;
+                                    }
+
+                                    if (valorTransferencia > conta.getSaldo()) {
+                                        System.out.println("Saldo insuficiente na conta principal!");
+                                        break;
+                                    }
 
                                     try {
-                                        carteiraEscolhida.setSaldo(carteiraEscolhida.getSaldo() + valorDeposito);
+                                        // 1. Atualiza o saldo da conta (subtrai)
+                                        conta.setSaldo(conta.getSaldo() - valorTransferencia);
+                                        contadao.atualizarSaldo(conta.getIdConta(), conta.getSaldo());
 
-                                        int idCarteira = carteiraEscolhida.getIdCarteira();
-                                        carteiraDao.atualizarSaldo(idCarteira, valorDeposito);
+                                        // 2. Atualiza o saldo da carteira (soma)
+                                        carteiraEscolhida.setSaldo(carteiraEscolhida.getSaldo() + valorTransferencia);
+                                        carteiraDao.atualizarSaldo(carteiraEscolhida.getIdCarteira(), carteiraEscolhida.getSaldo());
 
-                                        System.out.println("Valor depositado com sucesso na carteira " + carteiraEscolhida.getNome() + "!");
+                                        System.out.printf("Transferência de R$%.2f realizada com sucesso!%n", valorTransferencia);
+                                        System.out.printf("Novo saldo da conta: R$%.2f%n", conta.getSaldo());
+                                        System.out.printf("Novo saldo da carteira %s: R$%.2f%n",
+                                                carteiraEscolhida.getNome(), carteiraEscolhida.getSaldo());
 
-                                    } catch (Exception e) {
-                                        System.out.println("Erro ao depositar: " + e.getMessage());
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao transferir: " + e.getMessage());
+                                        // Reverte as alterações em memória em caso de erro
+                                        conta.setSaldo(conta.getSaldo() + valorTransferencia);
+                                        carteiraEscolhida.setSaldo(carteiraEscolhida.getSaldo() - valorTransferencia);
                                     }
                                     break;
 
@@ -413,7 +586,6 @@ public class Main {
                                     }
 
                                     try {
-                                        // Remove do banco
                                         carteiraDao.deletar(carteiraDel.getIdCarteira());
 
                                         // Remove da conta (em memória)
@@ -468,8 +640,6 @@ public class Main {
                                     }
 
                                     double quantidadeComprada = valorCompra / criptoativoEscolhido.getPrecoAtual();
-                                    System.out.printf("[DEBUG] Quantidade calculada: %.8f %s%n",
-                                            quantidadeComprada, criptoativoEscolhido.getSimbolo());
 
                                     try {
                                         carteiraECompra.setSaldo(carteiraECompra.getSaldo() - valorCompra);
@@ -525,34 +695,55 @@ public class Main {
                                             criptoVenda.getSimbolo(), criptoVenda.getQuantidade());
                                     double quantidadeVenda = sc.nextDouble();
 
-
-                                    if (quantidadeVenda <= 0 || quantidadeVenda > criptoVenda.getQuantidade()) {
-                                        System.out.println("Quantidade inválida ou saldo insuficiente!");
+                                    if (quantidadeVenda <= 0) {
+                                        System.out.println("Quantidade inválida! Deve ser maior que zero.");
+                                        break;
+                                    }
+                                    if (quantidadeVenda > criptoVenda.getQuantidade()) {
+                                        System.out.println("Quantidade indisponível na carteira!");
                                         break;
                                     }
 
+                                    double novaQuantidade = criptoVenda.getQuantidade() - quantidadeVenda;
                                     double valorVenda = quantidadeVenda * criptoVenda.getPrecoAtual();
-                                    System.out.printf("Valor da venda: R$%.2f%n", valorVenda);
+
+                                    System.out.printf("\nConfirmar venda de %.6f %s por R$%.2f? (S/N): ",
+                                            quantidadeVenda, criptoVenda.getSimbolo(), valorVenda);
+                                    sc.nextLine(); // Limpar buffer
+                                    confirmacao = sc.nextLine().trim().toUpperCase();
+
+                                    if (!confirmacao.equals("S")) {
+                                        System.out.println("Venda cancelada.");
+                                        break;
+                                    }
 
                                     try {
+                                        // Atualiza ou remove do banco de dados
                                         carteiraCriptoDao.atualizarQuantidade(
                                                 carteiraEVenda.getIdCarteira(),
                                                 criptoVenda.getIdCriptoativo(),
-                                                criptoVenda.getQuantidade() - quantidadeVenda
+                                                novaQuantidade
                                         );
 
+                                        // Atualiza o saldo da carteira
                                         carteiraEVenda.setSaldo(carteiraEVenda.getSaldo() + valorVenda);
                                         carteiraDao.atualizarSaldo(carteiraEVenda.getIdCarteira(), valorVenda);
 
+                                        // Registra a transação
                                         Transacao venda = new Transacao(TipoTransacaoEnum.VENDA, criptoVenda, quantidadeVenda, valorVenda);
                                         transacaoDao.cadastrar(venda, conta.getIdConta());
 
-                                        criptoVenda.setQuantidade(criptoVenda.getQuantidade() - quantidadeVenda);
+                                        // Atualiza ou remove da lista em memória
+                                        if (novaQuantidade > 0) {
+                                            criptoVenda.setQuantidade(novaQuantidade);
+                                        } else {
+                                            carteiraEVenda.getCriptoativos().remove(criptoVenda);
+                                        }
 
-                                        System.out.println("Venda realizada com sucesso!");
+                                        System.out.println("\nVenda realizada com sucesso!\n");
 
                                     } catch (SQLException e) {
-                                        System.out.println("Erro ao vender: " + e.getMessage());
+                                        System.out.println("\nErro ao processar venda: " + e.getMessage() + "\n");
                                     }
                                     break;
                                 case 10:

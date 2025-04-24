@@ -75,15 +75,6 @@ public class CarteiraDao {
         }
     }
 
-    public void compra(Integer idCarteira, double novoSaldo) throws SQLException {
-        String sql = "UPDATE Carteira SET saldo = saldo - ? WHERE idCarteira = ?";
-        try (PreparedStatement stm = conexao.prepareStatement(sql)) {
-            stm.setDouble(1, novoSaldo);
-            stm.setInt(2, idCarteira);
-            stm.executeUpdate();
-        }
-    }
-
     /**
      * Remove uma carteira do banco de dados.
      */

@@ -31,12 +31,6 @@ public class ContaDao {
         stm.setInt(5, conta.getCarteiras().size());
         stm.executeUpdate();
     }
-    public boolean pesquisar_email(String email) throws SQLException {
-        PreparedStatement stm = conexao.prepareStatement("SELECT * FROM conta WHERE emailInvestidor = ?");
-        stm.setString(1, email);
-        ResultSet result = stm.executeQuery();
-        return result.next(); // Retorna true se encontrar um registro com o email
-    }
 
     private Conta parseConta(ResultSet result) throws SQLException {
         Integer id = result.getInt("id_conta");

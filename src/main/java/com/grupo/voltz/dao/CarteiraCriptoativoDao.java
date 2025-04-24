@@ -77,15 +77,31 @@ public class CarteiraCriptoativoDao {
     }
 
     /**
-     * Atualiza a quantidade diretamente
+     * Atualiza a quantidade e remove se chegar a zero (versão definitiva)
      */
     public void atualizarQuantidade(int idCarteira, int idCriptoativo, double novaQuantidade) throws SQLException {
-        String sql = "UPDATE Carteira_CriptoAtivo SET quantidade = ? WHERE idCarteira = ? AND idCriptoAtivo = ?";
-        try (PreparedStatement stm = conexao.prepareStatement(sql)) {
-            stm.setDouble(1, novaQuantidade);
-            stm.setInt(2, idCarteira);
-            stm.setInt(3, idCriptoativo);
-            stm.executeUpdate();
+        if (novaQuantidade <= 0) {
+            // Remove completamente se a quantidade for zero ou negativa
+            String deleteSql = "DELETE FROM Carteira_Criptoativo WHERE idCarteira = ? AND idCriptoAtivo = ?";
+            try (PreparedStatement stmt = conexao.prepareStatement(deleteSql)) {
+                stmt.setInt(1, idCarteira);
+                stmt.setInt(2, idCriptoativo);
+                stmt.executeUpdate();
+            }
+        } else {
+            // Atualiza a quantidade se ainda for positiva
+            String updateSql = "UPDATE Carteira_Criptoativo SET quantidade = ? WHERE idCarteira = ? AND idCriptoAtivo = ?";
+            try (PreparedStatement stmt = conexao.prepareStatement(updateSql)) {
+                stmt.setDouble(1, novaQuantidade);
+                stmt.setInt(2, idCarteira);
+                stmt.setInt(3, idCriptoativo);
+                int rowsUpdated = stmt.executeUpdate();
+
+                // Se não atualizou nenhuma linha, insere novo registro
+                if (rowsUpdated == 0) {
+                    registrarCompra(idCarteira, idCriptoativo, novaQuantidade);
+                }
+            }
         }
     }
 
@@ -97,6 +113,16 @@ public class CarteiraCriptoativoDao {
         try (PreparedStatement stm = conexao.prepareStatement(sql)) {
             stm.setInt(1, idCarteira);
             stm.setInt(2, idCriptoativo);
+            stm.executeUpdate();
+        }
+    }
+
+    /**
+     * Remove todos os registros com quantidade zero (para limpeza periódica)
+     */
+    public void limparCriptoativosZerados() throws SQLException {
+        String sql = "DELETE FROM Carteira_Criptoativo WHERE quantidade <= 0";
+        try (PreparedStatement stm = conexao.prepareStatement(sql)) {
             stm.executeUpdate();
         }
     }
